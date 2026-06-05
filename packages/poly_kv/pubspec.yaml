@@ -1,0 +1,13 @@
+name: poly_kv
+description: Typed, storage-agnostic key-value capabilities for Dart and Flutter.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+resolution: workspace
+
+dev_dependencies:
+  test: ^1.26.0
+  very_good_analysis: ^10.2.0

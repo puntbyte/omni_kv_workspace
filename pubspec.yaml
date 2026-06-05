@@ -1,0 +1,41 @@
+name: poly_kv_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+workspace:
+  - packages/poly_kv
+  - packages/poly_kv_shared_preferences
+  - packages/poly_kv_hive_ce
+  - packages/poly_kv_secure_storage
+  - example
+
+melos:
+  categories:
+    packages:
+      - packages/**
+    examples:
+      - example
+
+  scripts:
+    format:apply:
+      run: dart format .
+      description: Format all Dart files.
+
+    format:check:
+      run: dart format --output=none --set-exit-if-changed .
+      description: Check formatting.
+
+    analyze:
+      run: melos exec -- dart analyze .
+      description: Analyze all packages.
+
+    test:
+      run: melos exec --dir-exists=test -- dart test
+      description: Run all tests.
+
+dev_dependencies:
+  lints: ^6.1.0
+  melos: ^7.8.0
+  very_good_analysis: ^10.2.0

@@ -1,0 +1,25 @@
+name: poly_kv_example
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+  flutter: '>=3.35.0'
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The Core Package
+  poly_kv: ^0.1.0
+
+  # The Local PolyKV Adapters
+  poly_kv_hive_ce: ^0.1.0
+  poly_kv_shared_preferences: ^0.1.0
+  poly_kv_secure_storage: ^0.1.0
+
+  # The Official Database SDKs
+  hive_ce: ^2.19.3
+  flutter_secure_storage: ^10.3.1
+  shared_preferences: ^2.5.5
