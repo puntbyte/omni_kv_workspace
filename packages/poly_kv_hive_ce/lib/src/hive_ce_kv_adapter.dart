@@ -11,10 +11,10 @@ final class HiveCeKvAdapter
         ClearableKvAdapter,
         WatchableKvAdapter,
         BatchableKvAdapter {
-  HiveCeKvAdapter(
+  const HiveCeKvAdapter(
     this.box, {
-    String? prefix,
-  }) : codec = HiveCeKvCodec(prefix: prefix);
+    this.codec = const HiveCeKvCodec(),
+  });
 
   final Box<Object?> box;
   final HiveCeKvCodec codec;
@@ -45,16 +45,7 @@ final class HiveCeKvAdapter
 
   @override
   Future<void> clear() async {
-    final prefix = codec.prefix;
-    if (prefix == null || prefix.isEmpty) {
-      await box.clear();
-      return;
-    }
-
-    final keys = box.keys
-        .whereType<String>()
-        .where((key) => key.startsWith(prefix))
-        .toList(growable: false);
+    final keys = box.keys.where(codec.ownsKey).toList(growable: false);
     await box.deleteAll(keys);
   }
 

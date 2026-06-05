@@ -15,7 +15,7 @@ Future<void> main() async {
 
   Hive.init(directory.path);
   final box = await Hive.openBox<Object?>('poly_kv_example');
-  final kv = KvGateway(HiveCeKvAdapter(box, prefix: 'example.'));
+  final kv = KvGateway(HiveCeKvAdapter(box));
 
   final previousCount = await kv.app(AppKey.launchCount).read();
   await kv.app(AppKey.launchCount).write(previousCount + 1);

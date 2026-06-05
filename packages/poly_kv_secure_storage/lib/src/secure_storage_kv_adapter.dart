@@ -10,10 +10,10 @@ final class SecureStorageKvAdapter
         RemovableKvAdapter,
         ClearableKvAdapter,
         BatchableKvAdapter {
-  SecureStorageKvAdapter(
+  const SecureStorageKvAdapter(
     this.storage, {
-    String? prefix,
-  }) : codec = SecureStorageKvCodec(prefix: prefix);
+    this.codec = const SecureStorageKvCodec(),
+  });
 
   final FlutterSecureStorage storage;
   final SecureStorageKvCodec codec;
@@ -50,14 +50,9 @@ final class SecureStorageKvAdapter
 
   @override
   Future<void> clear() async {
-    final prefix = codec.prefix;
-    if (prefix == null || prefix.isEmpty) {
-      await storage.deleteAll();
-      return;
-    }
-
     final values = await storage.readAll();
-    final keys = values.keys.where((key) => key.startsWith(prefix)).toList(growable: false);
+    final keys = values.keys.where(codec.ownsKey).toList(growable: false);
+
     for (final key in keys) {
       await storage.delete(key: key);
     }

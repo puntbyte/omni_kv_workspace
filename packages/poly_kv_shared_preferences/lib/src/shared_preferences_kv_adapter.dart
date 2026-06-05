@@ -10,10 +10,10 @@ final class SharedPreferencesKvAdapter
         RemovableKvAdapter,
         ClearableKvAdapter,
         BatchableKvAdapter {
-  SharedPreferencesKvAdapter(
+  const SharedPreferencesKvAdapter(
     this.preferences, {
-    String? prefix,
-  }) : codec = SharedPreferencesKvCodec(prefix: prefix);
+    this.codec = const SharedPreferencesKvCodec(),
+  });
 
   final SharedPreferences preferences;
   final SharedPreferencesKvCodec codec;
@@ -63,16 +63,11 @@ final class SharedPreferencesKvAdapter
 
   @override
   Future<void> clear() async {
-    final prefix = codec.prefix;
-    if (prefix == null || prefix.isEmpty) {
-      await preferences.clear();
-      return;
-    }
-
     final keys = preferences
         .getKeys()
-        .where((key) => key.startsWith(prefix))
+        .where(codec.ownsKey)
         .toList(growable: false);
+
     for (final key in keys) {
       await preferences.remove(key);
     }

@@ -1,22 +1,46 @@
 import 'package:poly_kv/poly_kv.dart';
 
-import '../poly_kv_shared_preferences.dart' show SharedPreferencesKvAdapter;
-
-import 'shared_preferences_kv_adapter.dart' show SharedPreferencesKvAdapter;
-
 /// Key/value codec used by [SharedPreferencesKvAdapter].
-final class SharedPreferencesKvCodec {
+final class SharedPreferencesKvCodec implements KvStorageCodec {
   const SharedPreferencesKvCodec({this.prefix});
 
   final String? prefix;
 
-  String storageKey(String key) {
+  @override
+  String storageKey(String logicalKey) {
     final prefix = this.prefix;
-    if (prefix == null || prefix.isEmpty) return key;
-    return '$prefix$key';
+    if (prefix == null || prefix.isEmpty) return logicalKey;
+    return '$prefix$logicalKey';
   }
 
-  Object encode(Object value) {
+  @override
+  String logicalKey(Object? storageKey) {
+    if (storageKey is! String) {
+      throw ArgumentError.value(
+        storageKey,
+        'storageKey',
+        'SharedPreferences keys must be strings.',
+      );
+    }
+
+    final prefix = this.prefix;
+    if (prefix == null || prefix.isEmpty || !storageKey.startsWith(prefix)) {
+      return storageKey;
+    }
+
+    return storageKey.substring(prefix.length);
+  }
+
+  @override
+  bool ownsKey(Object? storageKey) {
+    final prefix = this.prefix;
+    if (prefix == null || prefix.isEmpty) return true;
+
+    return storageKey is String && storageKey.startsWith(prefix);
+  }
+
+  @override
+  Object? encode(Object? value) {
     return switch (value) {
       String() => value,
       int() => value,
@@ -24,12 +48,13 @@ final class SharedPreferencesKvCodec {
       bool() => value,
       List<String>() => value,
       _ => throw KvUnsupportedValueException(
-        'SharedPreferencesKvAdapter natively supports String, int, double, '
-        'bool, and List<String>. To store a ${value.runtimeType}, use a '
-        'converter on your KvKey.',
-      ),
+          'SharedPreferencesKvAdapter natively supports String, int, double, '
+          'bool, and List<String>. To store a ${value.runtimeType}, use a '
+          'converter on your KvKey.',
+        ),
     };
   }
 
+  @override
   Object? decode(Object? value) => value;
 }

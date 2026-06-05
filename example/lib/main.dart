@@ -46,15 +46,8 @@ class _PolyKvHomePageState extends State<PolyKvHomePage> {
 
   Future<_Stores> _openStores() async {
     final preferences = await SharedPreferences.getInstance();
-    final sharedKv = KvGateway(
-      SharedPreferencesKvAdapter(preferences, prefix: 'poly_kv.example.'),
-    );
-    final secureKv = KvGateway(
-      SecureStorageKvAdapter(
-        const FlutterSecureStorage(),
-        prefix: 'poly_kv.example.',
-      ),
-    );
+    final sharedKv = KvGateway(SharedPreferencesKvAdapter(preferences));
+    const secureKv = KvGateway(SecureStorageKvAdapter(FlutterSecureStorage()));
     return _Stores(sharedKv: sharedKv, secureKv: secureKv);
   }
 

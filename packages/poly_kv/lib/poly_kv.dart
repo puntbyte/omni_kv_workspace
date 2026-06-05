@@ -24,6 +24,7 @@ export 'src/core/kv_converter.dart';
 export 'src/core/kv_entry.dart';
 export 'src/core/kv_gateway.dart';
 export 'src/core/kv_key.dart';
+export 'src/core/kv_storage_codec.dart';
 
 // ---- Memory -------------------------------------------------------------------------------------
 export 'src/memory/memory_kv_adapter.dart';
