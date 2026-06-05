@@ -6,6 +6,7 @@ import 'package:poly_kv_shared_preferences/poly_kv_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app_keys.dart';
+import 'auth_keys.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
