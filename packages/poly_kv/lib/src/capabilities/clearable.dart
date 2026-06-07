@@ -10,6 +10,6 @@ abstract interface class ClearableKvAdapter implements KvAdapter {
   Future<void> clear();
 }
 
-extension ClearableGatewayExtension<A extends ClearableKvAdapter> on KvGateway<A> {
+extension ClearableKvGatewayExtension<A extends ClearableKvAdapter> on KvGateway<A> {
   Future<void> clear() => adapter.clear();
 }

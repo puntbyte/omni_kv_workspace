@@ -12,7 +12,7 @@ abstract interface class BatchableKvAdapter implements KvAdapter {
   Future<void> batch(List<KvRawWrite> writes);
 }
 
-extension BatchableGatewayExtension<A extends BatchableKvAdapter> on KvGateway<A> {
+extension BatchableKvGatewayExtension<A extends BatchableKvAdapter> on KvGateway<A> {
   Future<void> batch(List<KvWrite> writes) {
     return adapter.batch([
       for (final write in writes) write.toRaw(),

@@ -10,10 +10,10 @@ abstract interface class RemovableKvAdapter implements KvAdapter {
   Future<void> remove(String key);
 }
 
-extension RemovableGatewayExtension<A extends RemovableKvAdapter> on KvGateway<A> {
+extension RemovableKvGatewayExtension<A extends RemovableKvAdapter> on KvGateway<A> {
   Future<void> remove<T>(KvKey<T> key) => adapter.remove(key.name);
 }
 
-extension RemovableEntryExtension<T, A extends RemovableKvAdapter> on KvEntry<T, A> {
+extension RemovableKvEntryExtension<T, A extends RemovableKvAdapter> on KvEntry<T, A> {
   Future<void> remove() => gateway.remove(key);
 }

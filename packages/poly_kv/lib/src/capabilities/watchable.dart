@@ -11,7 +11,7 @@ abstract interface class WatchableKvAdapter implements KvAdapter {
   Stream<KvChange<Object?>> watch(String key);
 }
 
-extension WatchableGatewayExtension<A extends WatchableKvAdapter> on KvGateway<A> {
+extension WatchableKvGatewayExtension<A extends WatchableKvAdapter> on KvGateway<A> {
   Stream<KvChange<T>> watch<T>(KvKey<T> key) {
     return adapter.watch(key.name).map((change) {
       final value = change.value == null ? null : key.decode(change.value, isPresent: true);
@@ -34,6 +34,6 @@ extension WatchableGatewayExtension<A extends WatchableKvAdapter> on KvGateway<A
   }
 }
 
-extension WatchableEntryExtension<T, A extends WatchableKvAdapter> on KvEntry<T, A> {
+extension WatchableKvEntryExtension<T, A extends WatchableKvAdapter> on KvEntry<T, A> {
   Stream<KvChange<T>> watch() => gateway.watch(key);
 }

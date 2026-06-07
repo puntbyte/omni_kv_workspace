@@ -50,7 +50,7 @@ final class KvRemove<T> extends KvWrite {
 // 3. FLUENT EXTENSIONS
 // ==============================================================================
 
-extension KvKeyBatchX<T> on KvKey<T> {
+extension KvKeyBatchExtension<T> on KvKey<T> {
   /// Fluent helper to create a KvSet operation for a batch.
   KvSet<T> set(T value) => KvSet<T>(this, value);
 

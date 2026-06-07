@@ -10,7 +10,7 @@ abstract interface class WritableKvAdapter implements KvAdapter {
   Future<void> write(String key, Object? value);
 }
 
-extension WritableGatewayExtension<A extends WritableKvAdapter> on KvGateway<A> {
+extension WritableKvGatewayExtension<A extends WritableKvAdapter> on KvGateway<A> {
   Future<void> write<T>(KvKey<T> key, T value) {
     return adapter.write(key.name, key.encode(value));
   }
@@ -18,6 +18,6 @@ extension WritableGatewayExtension<A extends WritableKvAdapter> on KvGateway<A> 
   Future<void> set<T>(KvKey<T> key, T value) => write(key, value);
 }
 
-extension WritableEntryExtension<T, A extends WritableKvAdapter> on KvEntry<T, A> {
+extension WritableKvEntryExtension<T, A extends WritableKvAdapter> on KvEntry<T, A> {
   Future<void> write(T value) => gateway.write(key, value);
 }
