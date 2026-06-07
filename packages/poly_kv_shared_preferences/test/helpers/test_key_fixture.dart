@@ -27,6 +27,6 @@ class TestKey<T> extends KvKey<T> {
   static const metadata = TestKey<Map<String, dynamic>>.required('metadata');
 }
 
-extension TestKeyGatewayX<A extends KvAdapter> on KvGateway<A> {
+extension TestKeyGatewayX<A extends KvCapability> on KvGateway<A> {
   KvEntry<T, A> test<T>(TestKey<T> key) => entry(key);
 }

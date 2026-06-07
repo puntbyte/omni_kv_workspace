@@ -3,12 +3,12 @@ import 'package:poly_kv/poly_kv.dart';
 
 class FakeKvAdapter
     implements
-        ReadableKvAdapter,
-        WritableKvAdapter,
-        RemovableKvAdapter,
-        ClearableKvAdapter,
-        WatchableKvAdapter,
-        BatchableKvAdapter {
+        ReadableKvCapability,
+        WritableKvCapability,
+        RemovableKvCapability,
+        ClearableKvCapability,
+        WatchableKvCapability,
+        BatchableKvCapability {
   final Map<String, Object?> store = {};
   final StreamController<KvChange<Object?>> controller = StreamController.broadcast();
 
@@ -35,12 +35,12 @@ class FakeKvAdapter
   Future<void> clear() async => store.clear();
 
   @override
-  Future<void> batch(List<KvRawWrite> writes) async {
-    for (final operation in writes) {
+  Future<void> batch(List<KvBatchOperation> operations) async {
+    for (final operation in operations) {
       switch (operation) {
-        case KvRawSet(:final key, :final value):
+        case KvBatchWrite(:final key, :final value):
           await write(key, value);
-        case KvRawRemove(:final key):
+        case KvBatchRemove(:final key):
           await remove(key);
       }
     }

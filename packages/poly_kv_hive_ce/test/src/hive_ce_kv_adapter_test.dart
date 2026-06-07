@@ -34,10 +34,10 @@ void main() {
     test('batch correctly updates and deletes', () async {
       await gateway.test(.theme).write('light');
 
-      await gateway.batch([
-        TestKey.theme.remove(),
-        TestKey.volume.set(0.8),
-      ]);
+      await gateway.batch((entry) {
+        entry.test(.theme).remove();
+        entry.test(.volume).write(0.8);
+      });
 
       expect(await gateway.test(.theme).exists(), isFalse);
       expect(await gateway.test(.volume).read(), 0.8);
