@@ -5,15 +5,9 @@ import 'package:poly_kv_example/keys/auth_keys.dart';
 import 'shared/console_output.dart';
 
 Future<void> main() async {
-  const output = ConsoleOutput();
+  final output = const ConsoleOutput()..title('MemoryKvAdapter');
 
-  output.title('MemoryKvAdapter');
-
-  final kv = KvGateway(
-    MemoryKvAdapter(
-      codec: const MemoryKvCodec(prefix: 'example.'),
-    ),
-  );
+  final kv = KvGateway(MemoryKvAdapter(codec: const MemoryKvCodec(prefix: 'example.')));
   final subscription = kv.app(.theme).watch().listen((change) {
     output.step('Theme changed: ${change.previousValue} -> ${change.value}');
   });
@@ -26,19 +20,19 @@ Future<void> main() async {
   await output.value('Launch count', kv.app(.launchCount).read());
   await output.value('Profile', kv.auth(.userProfile).read());
 
-  await kv.batch((entry) {
-    entry.app(.theme).write(AppTheme.light);
-    entry.app(.launchCount).write(2);
-    entry.auth(.token).write('memory-token');
-    entry.auth(.token).remove();
+  await kv.batch((entry) async {
+    await entry.app(.theme).write(AppTheme.light);
+    await entry.app(.launchCount).write(2);
+    await entry.auth(.token).write('memory-token');
+    await entry.auth(.token).remove();
   });
 
   await output.value('Theme after batch', kv.app(.theme).read());
   await output.value('Token after batch', kv.auth(.token).read());
 
-  await kv.app.batch((entry) {
-    entry(.theme).write(AppTheme.dark);
-    entry(.launchCount).write(3);
+  await kv.app.batch((entry) async {
+    await entry(.theme).write(AppTheme.dark);
+    await entry(.launchCount).write(3);
   });
 
   await output.value('Theme after app batch', kv.app(.theme).read());

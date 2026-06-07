@@ -5,8 +5,9 @@ final class ConsoleOutput {
   const ConsoleOutput();
 
   void title(String value) {
-    stdout.writeln();
-    stdout.writeln('=== $value ===');
+    stdout
+      ..writeln()
+      ..writeln('=== $value ===');
   }
 
   void step(String value) {
