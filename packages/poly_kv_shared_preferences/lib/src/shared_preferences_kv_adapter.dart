@@ -4,18 +4,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'shared_preferences_kv_codec.dart';
 
 final class SharedPreferencesKvAdapter
+    with SequentialKvBatchCapability
     implements
-        ReadableKvAdapter,
-        WritableKvAdapter,
-        RemovableKvAdapter,
-        ClearableKvAdapter,
-        BatchableKvAdapter {
+        KvAdapter,
+        ReadableKvCapability,
+        WritableKvCapability,
+        RemovableKvCapability,
+        ClearableKvCapability,
+        BatchableKvCapability {
   const SharedPreferencesKvAdapter(
     this.preferences, {
     this.codec = const SharedPreferencesKvCodec(),
   });
 
   final SharedPreferences preferences;
+  @override
   final SharedPreferencesKvCodec codec;
 
   @override
@@ -67,18 +70,6 @@ final class SharedPreferencesKvAdapter
 
     for (final key in keys) {
       await preferences.remove(key);
-    }
-  }
-
-  @override
-  Future<void> batch(List<KvRawWrite> writes) async {
-    for (final operation in writes) {
-      switch (operation) {
-        case KvRawSet(:final key, :final value):
-          await write(key, value);
-        case KvRawRemove(:final key):
-          await remove(key);
-      }
     }
   }
 }

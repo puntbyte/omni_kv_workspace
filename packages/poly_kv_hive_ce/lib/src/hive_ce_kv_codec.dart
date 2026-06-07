@@ -1,8 +1,6 @@
 import 'package:poly_kv/poly_kv.dart';
 
-import 'hive_ce_kv_adapter.dart';
-
-/// Key/value codec used by [HiveCeKvAdapter].
+/// Key/value codec used by `HiveCeKvAdapter`.
 ///
 /// Hive CE can store primitive values directly. This codec mainly owns
 /// prefixing and logical/storage key translation so adapter logic stays small.

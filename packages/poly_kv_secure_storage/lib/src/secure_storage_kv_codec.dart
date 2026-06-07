@@ -2,11 +2,7 @@ import 'dart:convert';
 
 import 'package:poly_kv/poly_kv.dart';
 
-import '../poly_kv_secure_storage.dart' show SecureStorageKvAdapter;
-
-import 'secure_storage_kv_adapter.dart' show SecureStorageKvAdapter;
-
-/// Key/value codec used by [SecureStorageKvAdapter].
+/// Key/value codec used by `SecureStorageKvAdapter`.
 final class SecureStorageKvCodec implements KvStorageCodec {
   const SecureStorageKvCodec({this.prefix});
 

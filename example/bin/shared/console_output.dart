@@ -4,21 +4,20 @@ import 'dart:io';
 final class ConsoleOutput {
   const ConsoleOutput();
 
-  static void title(String value) {
-    stdout
-      ..writeln()
-      ..writeln('=== $value ===');
+  void title(String value) {
+    stdout.writeln();
+    stdout.writeln('=== $value ===');
   }
 
-  static void step(String value) {
+  void step(String value) {
     stdout.writeln('• $value');
   }
 
-  static Future<void> value(String label, FutureOr<Object?> value) async {
+  Future<void> value(String label, FutureOr<Object?> value) async {
     stdout.writeln('$label: ${await value}');
   }
 
-  static void done(String value) {
+  void done(String value) {
     stdout.writeln('✓ $value');
   }
 }

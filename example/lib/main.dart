@@ -5,8 +5,8 @@ import 'package:poly_kv_secure_storage/poly_kv_secure_storage.dart';
 import 'package:poly_kv_shared_preferences/poly_kv_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'app_keys.dart';
-import 'auth_keys.dart';
+import 'keys/app_keys.dart';
+import 'keys/auth_keys.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,26 +40,40 @@ class _PolyKvHomePageState extends State<PolyKvHomePage> {
   @override
   void initState() {
     super.initState();
-    _memoryKv = KvGateway(MemoryKvAdapter(prefix: 'example.'));
+    _memoryKv = KvGateway(
+      MemoryKvAdapter(
+        codec: const MemoryKvCodec(prefix: 'example.'),
+      ),
+    );
     _storesFuture = _openStores();
   }
 
   Future<_Stores> _openStores() async {
     final preferences = await SharedPreferences.getInstance();
-    final sharedKv = KvGateway(SharedPreferencesKvAdapter(preferences));
-    const secureKv = KvGateway(SecureStorageKvAdapter(FlutterSecureStorage()));
+    final sharedKv = KvGateway(
+      SharedPreferencesKvAdapter(
+        preferences,
+        codec: const SharedPreferencesKvCodec(prefix: 'poly_kv.example.'),
+      ),
+    );
+    const secureKv = KvGateway(
+      SecureStorageKvAdapter(
+        FlutterSecureStorage(),
+        codec: SecureStorageKvCodec(prefix: 'poly_kv.example.'),
+      ),
+    );
     return _Stores(sharedKv: sharedKv, secureKv: secureKv);
   }
 
   Future<void> _runDemo(_Stores stores) async {
-    await _memoryKv.app(AppKey.theme).write(AppTheme.dark);
+    await _memoryKv.app(.theme).write(AppTheme.dark);
 
-    final currentCount = await stores.sharedKv.app(AppKey.launchCount).read();
-    await stores.sharedKv.app(AppKey.launchCount).write(currentCount + 1);
-    await stores.sharedKv.app(AppKey.lastOpenedAt).write(DateTime.now());
+    final currentCount = await stores.sharedKv.app(.launchCount).read();
+    await stores.sharedKv.app(.launchCount).write(currentCount + 1);
+    await stores.sharedKv.app(.lastOpenedAt).write(DateTime.now());
 
-    await stores.secureKv.auth(AuthKey.token).write('secure-token');
-    await stores.secureKv.auth(AuthKey.userProfile).write({'id': 42, 'role': 'owner'});
+    await stores.secureKv.auth(.token).write('secure-token');
+    await stores.secureKv.auth(.userProfile).write({'id': 42, 'role': 'owner'});
 
     setState(() {});
   }
@@ -87,19 +101,19 @@ class _PolyKvHomePageState extends State<PolyKvHomePage> {
                   children: [
                     _ValueCard(
                       title: 'Memory theme',
-                      value: _memoryKv.app(AppKey.theme).read(),
+                      value: _memoryKv.app(.theme).read(),
                     ),
                     _ValueCard(
                       title: 'SharedPreferences launch count',
-                      value: stores.sharedKv.app(AppKey.launchCount).read(),
+                      value: stores.sharedKv.app(.launchCount).read(),
                     ),
                     _ValueCard(
                       title: 'SharedPreferences last opened',
-                      value: stores.sharedKv.app(AppKey.lastOpenedAt).read(),
+                      value: stores.sharedKv.app(.lastOpenedAt).read(),
                     ),
                     _ValueCard(
                       title: 'SecureStorage token',
-                      value: stores.secureKv.auth(AuthKey.token).read(),
+                      value: stores.secureKv.auth(.token).read(),
                     ),
                     const SizedBox(height: 16),
                     FilledButton(

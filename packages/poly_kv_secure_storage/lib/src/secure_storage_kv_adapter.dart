@@ -4,18 +4,21 @@ import 'package:poly_kv/poly_kv.dart';
 import 'secure_storage_kv_codec.dart';
 
 final class SecureStorageKvAdapter
+    with SequentialKvBatchCapability
     implements
-        ReadableKvAdapter,
-        WritableKvAdapter,
-        RemovableKvAdapter,
-        ClearableKvAdapter,
-        BatchableKvAdapter {
+        KvAdapter,
+        ReadableKvCapability,
+        WritableKvCapability,
+        RemovableKvCapability,
+        ClearableKvCapability,
+        BatchableKvCapability {
   const SecureStorageKvAdapter(
     this.storage, {
     this.codec = const SecureStorageKvCodec(),
   });
 
   final FlutterSecureStorage storage;
+  @override
   final SecureStorageKvCodec codec;
 
   @override
@@ -55,18 +58,6 @@ final class SecureStorageKvAdapter
 
     for (final key in keys) {
       await storage.delete(key: key);
-    }
-  }
-
-  @override
-  Future<void> batch(List<KvRawWrite> writes) async {
-    for (final operation in writes) {
-      switch (operation) {
-        case KvRawSet(:final key, :final value):
-          await write(key, value);
-        case KvRawRemove(:final key):
-          await remove(key);
-      }
     }
   }
 }

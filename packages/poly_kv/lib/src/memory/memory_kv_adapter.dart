@@ -6,45 +6,41 @@ import '../capabilities/readable.dart';
 import '../capabilities/removable.dart';
 import '../capabilities/watchable.dart';
 import '../capabilities/writable.dart';
-import '../models/kv_batch.dart';
+import '../core/kv_adapter.dart';
 import '../models/kv_change.dart';
+import 'memory_kv_codec.dart';
 
 final class MemoryKvAdapter
+    with SequentialKvBatchCapability
     implements
-        ReadableKvAdapter,
-        WritableKvAdapter,
-        RemovableKvAdapter,
-        ClearableKvAdapter,
-        WatchableKvAdapter,
-        BatchableKvAdapter {
-  MemoryKvAdapter({Map<String, Object?>? initialValues, this.prefix})
-    : _values = Map<String, Object?>.of(initialValues ?? const {});
+        KvAdapter,
+        ReadableKvCapability,
+        WritableKvCapability,
+        RemovableKvCapability,
+        ClearableKvCapability,
+        WatchableKvCapability,
+        BatchableKvCapability {
+  MemoryKvAdapter({
+    Map<String, Object?>? initialValues,
+    this.codec = const MemoryKvCodec(),
+  }) : _values = Map<String, Object?>.of(initialValues ?? const {});
 
-  final String? prefix;
+  @override
+  final MemoryKvCodec codec;
   final Map<String, Object?> _values;
   final Map<String, StreamController<KvChange<Object?>>> _controllers = {};
 
   Map<String, Object?> get values => Map.unmodifiable(_values);
 
-  String _storageKey(String key) {
-    final prefix = this.prefix;
-    if (prefix == null || prefix.isEmpty) return key;
-    return '$prefix$key';
-  }
-
-  String _logicalKey(String storageKey) {
-    final prefix = this.prefix;
-    if (prefix == null || prefix.isEmpty || !storageKey.startsWith(prefix)) {
-      return storageKey;
-    }
-    return storageKey.substring(prefix.length);
+  @override
+  Future<Object?> read(String key) async {
+    return codec.decode(_values[codec.storageKey(key)]);
   }
 
   @override
-  Future<Object?> read(String key) async => _values[_storageKey(key)];
-
-  @override
-  Future<bool> contains(String key) async => _values.containsKey(_storageKey(key));
+  Future<bool> contains(String key) async {
+    return _values.containsKey(codec.storageKey(key));
+  }
 
   @override
   Future<void> write(String key, Object? value) async {
@@ -53,14 +49,15 @@ final class MemoryKvAdapter
       return;
     }
 
-    final storageKey = _storageKey(key);
+    final storageKey = codec.storageKey(key);
     final previous = _values[storageKey];
-    _values[storageKey] = value;
+    final encoded = codec.encode(value);
+    _values[storageKey] = encoded;
     _emit(
       storageKey,
       KvValueChanged<Object?>(
         key: key,
-        value: value,
+        value: encoded,
         previousValue: previous,
       ),
     );
@@ -68,7 +65,7 @@ final class MemoryKvAdapter
 
   @override
   Future<void> remove(String key) async {
-    final storageKey = _storageKey(key);
+    final storageKey = codec.storageKey(key);
     if (!_values.containsKey(storageKey)) return;
 
     final previous = _values.remove(storageKey);
@@ -83,36 +80,23 @@ final class MemoryKvAdapter
 
   @override
   Future<void> clear() async {
-    final prefix = this.prefix;
-    final keys = prefix == null || prefix.isEmpty
-        ? _values.keys.toList(growable: false)
-        : _values.keys.where((key) => key.startsWith(prefix)).toList(growable: false);
+    final keys = _values.keys.where(codec.ownsKey).toList(growable: false);
 
     for (final key in keys) {
-      final logicalKey = _logicalKey(key);
-      await remove(logicalKey);
-    }
-  }
-
-  @override
-  Future<void> batch(List<KvRawWrite> writes) async {
-    for (final operation in writes) {
-      switch (operation) {
-        case KvRawSet(:final key, :final value):
-          await write(key, value);
-        case KvRawRemove(:final key):
-          await remove(key);
-      }
+      await remove(codec.logicalKey(key));
     }
   }
 
   @override
   Stream<KvChange<Object?>> watch(String key) {
-    return _controllerFor(_storageKey(key)).stream;
+    return _controllerFor(codec.storageKey(key)).stream;
   }
 
   StreamController<KvChange<Object?>> _controllerFor(String storageKey) {
-    return _controllers.putIfAbsent(storageKey, StreamController<KvChange<Object?>>.broadcast);
+    return _controllers.putIfAbsent(
+      storageKey,
+      StreamController<KvChange<Object?>>.broadcast,
+    );
   }
 
   void _emit(String storageKey, KvChange<Object?> change) {

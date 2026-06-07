@@ -1,41 +1,30 @@
 import 'package:poly_kv/poly_kv.dart';
-import 'package:poly_kv_example/app_keys.dart';
-import 'package:poly_kv_example/auth_keys.dart';
+import 'package:poly_kv_example/keys/app_keys.dart';
+import 'package:poly_kv_example/keys/auth_keys.dart';
 
 import 'shared/console_output.dart';
 
 Future<void> main() async {
-  ConsoleOutput.title('MemoryKvAdapter');
+  const output = ConsoleOutput();
 
-  final kv = KvGateway(MemoryKvAdapter(prefix: 'example.'));
+  output.title('MemoryKvAdapter');
+
+  final kv = KvGateway(
+    MemoryKvAdapter(
+      codec: const MemoryKvCodec(prefix: 'example.'),
+    ),
+  );
   final subscription = kv.app(.theme).watch().listen((change) {
-    ConsoleOutput.step('Theme changed: ${change.previousValue} -> ${change.value}');
+    output.step('Theme changed: ${change.previousValue} -> ${change.value}');
   });
 
   await kv.app(.theme).write(AppTheme.dark);
   await kv.app(.launchCount).write(1);
   await kv.auth(.userProfile).write({'id': 1, 'role': 'admin'});
 
-  await ConsoleOutput.value('Theme', kv.app(.theme).read());
-  await ConsoleOutput.value('Launch count', kv.app(.launchCount).read());
-  await ConsoleOutput.value('Profile', kv.auth(.userProfile).read());
-
-  // i do not like it
-  await kv.batch([
-    AppKey.theme.set(AppTheme.light),
-    AuthKey.token.set('memory-token'),
-  ]);
-
-
-  await ConsoleOutput.value('Token after batch', kv.auth(AuthKey.token).read());
-
-  await subscription.cancel();
-  ConsoleOutput.done('Memory demo complete');
-
-  await kv.writeAll((entry) {
-    entry.app(.theme, AppTheme.light);
-    entry.auth(.token, 'memory-token');
-  });
+  await output.value('Theme', kv.app(.theme).read());
+  await output.value('Launch count', kv.app(.launchCount).read());
+  await output.value('Profile', kv.auth(.userProfile).read());
 
   await kv.batch((entry) {
     entry.app(.theme).write(AppTheme.light);
@@ -44,10 +33,17 @@ Future<void> main() async {
     entry.auth(.token).remove();
   });
 
+  await output.value('Theme after batch', kv.app(.theme).read());
+  await output.value('Token after batch', kv.auth(.token).read());
+
   await kv.app.batch((entry) {
-    entry(.theme).write(AppTheme.light);
-    entry(.launchCount).write(2);
+    entry(.theme).write(AppTheme.dark);
+    entry(.launchCount).write(3);
   });
+
+  await output.value('Theme after app batch', kv.app(.theme).read());
+  await output.value('Launch count after app batch', kv.app(.launchCount).read());
+
+  await subscription.cancel();
+  output.done('Memory demo complete');
 }
-
-
