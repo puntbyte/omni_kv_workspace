@@ -56,8 +56,14 @@ class KvKey<T> {
     try {
       final converter = this.converter;
       return converter == null ? value as T : converter.decode(value) as T;
-    } on Object catch (error) {
-      throw KvTypeException('Failed to decode key "$name" as $T: $error');
+    } on Object catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        KvTypeException(
+          'Failed to decode key "$name" as $T.',
+          cause: error,
+        ),
+        stackTrace,
+      );
     }
   }
 

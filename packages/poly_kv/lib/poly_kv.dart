@@ -28,6 +28,7 @@ export 'src/core/kv_storage_codec.dart';
 
 // ---- Memory -------------------------------------------------------------------------------------
 export 'src/memory/memory_kv_adapter.dart';
+export 'src/memory/memory_kv_codec.dart';
 
 // ---- Models -------------------------------------------------------------------------------------
 export 'src/models/kv_batch.dart';
