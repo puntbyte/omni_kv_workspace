@@ -4,14 +4,12 @@ import '../core/kv_gateway.dart';
 import '../core/kv_key.dart';
 import '../models/kv_change.dart';
 
-/// Adapter capability for watching value changes.
-abstract interface class WatchableKvAdapter implements KvAdapter {
-  const WatchableKvAdapter();
-
+/// Capability for watching value changes.
+abstract mixin class WatchableKvCapability implements KvCapability {
   Stream<KvChange<Object?>> watch(String key);
 }
 
-extension WatchableKvGatewayExtension<A extends WatchableKvAdapter> on KvGateway<A> {
+extension WatchableKvGatewayExtension<A extends WatchableKvCapability> on KvGateway<A> {
   Stream<KvChange<T>> watch<T>(KvKey<T> key) {
     return adapter.watch(key.name).map((change) {
       final value = change.value == null ? null : key.decode(change.value, isPresent: true);
@@ -34,6 +32,6 @@ extension WatchableKvGatewayExtension<A extends WatchableKvAdapter> on KvGateway
   }
 }
 
-extension WatchableKvEntryExtension<T, A extends WatchableKvAdapter> on KvEntry<T, A> {
+extension WatchableKvEntryExtension<T, A extends WatchableKvCapability> on KvEntry<T, A> {
   Stream<KvChange<T>> watch() => gateway.watch(key);
 }

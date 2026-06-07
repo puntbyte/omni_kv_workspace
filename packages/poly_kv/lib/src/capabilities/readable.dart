@@ -3,16 +3,14 @@ import '../core/kv_entry.dart';
 import '../core/kv_gateway.dart';
 import '../core/kv_key.dart';
 
-/// Adapter capability for reading values.
-abstract interface class ReadableKvAdapter implements KvAdapter {
-  const ReadableKvAdapter();
-
+/// Capability for reading values.
+abstract mixin class ReadableKvCapability implements KvCapability {
   Future<Object?> read(String key);
 
   Future<bool> contains(String key);
 }
 
-extension ReadableKvGatewayExtension<A extends ReadableKvAdapter> on KvGateway<A> {
+extension ReadableKvGatewayExtension<A extends ReadableKvCapability> on KvGateway<A> {
   Future<T> read<T>(KvKey<T> key) async {
     final hasValue = await adapter.contains(key.name);
     final raw = hasValue ? await adapter.read(key.name) : null;
@@ -24,7 +22,8 @@ extension ReadableKvGatewayExtension<A extends ReadableKvAdapter> on KvGateway<A
   Future<bool> contains<T>(KvKey<T> key) => adapter.contains(key.name);
 }
 
-extension ReadableKvEntryExtension<T, A extends ReadableKvAdapter> on KvEntry<T, A> {
+extension ReadableKvEntryExtension<T, A extends ReadableKvCapability> on KvEntry<T, A> {
   Future<T> read() => gateway.read(key);
+
   Future<bool> exists() => gateway.contains(key);
 }
