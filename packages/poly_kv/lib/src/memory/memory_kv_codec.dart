@@ -1,0 +1,47 @@
+import '../core/kv_storage_codec.dart';
+
+/// Key/value codec used by `MemoryKvAdapter`.
+final class MemoryKvCodec implements KvStorageCodec {
+  const MemoryKvCodec({this.prefix});
+
+  final String? prefix;
+
+  @override
+  String storageKey(String logicalKey) {
+    final prefix = this.prefix;
+    if (prefix == null || prefix.isEmpty) return logicalKey;
+    return '$prefix$logicalKey';
+  }
+
+  @override
+  String logicalKey(Object? storageKey) {
+    if (storageKey is! String) {
+      throw ArgumentError.value(
+        storageKey,
+        'storageKey',
+        'Memory keys managed by PolyKV must be strings.',
+      );
+    }
+
+    final prefix = this.prefix;
+    if (prefix == null || prefix.isEmpty || !storageKey.startsWith(prefix)) {
+      return storageKey;
+    }
+
+    return storageKey.substring(prefix.length);
+  }
+
+  @override
+  bool ownsKey(Object? storageKey) {
+    final prefix = this.prefix;
+    if (prefix == null || prefix.isEmpty) return true;
+
+    return storageKey is String && storageKey.startsWith(prefix);
+  }
+
+  @override
+  Object? encode(Object? value) => value;
+
+  @override
+  Object? decode(Object? value) => value;
+}

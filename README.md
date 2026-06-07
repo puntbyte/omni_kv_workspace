@@ -23,6 +23,8 @@ poly_kv_workspace/
 │
 ├── packages/
 │   ├── poly_kv/
+│   │   └── lib/src/core/
+│   │       └── kv_storage_codec.dart
 │   ├── poly_kv_hive_ce/
 │   │   └── lib/src/
 │   │       ├── hive_ce_kv_adapter.dart
@@ -82,7 +84,11 @@ final class AppKey<T> extends KvKey<T> {
 Use keys through a gateway:
 
 ```dart
-final kv = KvGateway(MemoryKvAdapter(prefix: 'example.'));
+final kv = KvGateway(
+  MemoryKvAdapter(
+    codec: const MemoryKvCodec(prefix: 'example.'),
+  ),
+);
 
 await kv.write(AppKey.theme, AppTheme.dark);
 await kv.write(AppKey.launchCount, 1);
@@ -91,24 +97,46 @@ final theme = await kv.read(AppKey.theme);
 final count = await kv.read(AppKey.launchCount);
 ```
 
+Grouped writes/removes use the same fluent entry style:
+
+```dart
+await kv.batch((entry) {
+  entry.app(.theme).write(AppTheme.light);
+  entry.app(.launchCount).write(2);
+  entry.auth(.token).write('memory-token');
+  entry.auth(.token).remove();
+});
+
+await kv.app.batch((entry) {
+  entry(.theme).write(AppTheme.dark);
+  entry(.launchCount).write(3);
+});
+```
+
 ## Capability-based API
 
 Adapter interfaces control which APIs autocomplete:
 
-- `ReadableKvAdapter` enables `read`, `contains`, and `entry(...).read()`.
-- `WritableKvAdapter` enables `write` and `entry(...).write(...)`.
-- `RemovableKvAdapter` enables `remove`.
-- `ClearableKvAdapter` enables `clear`.
-- `BatchableKvAdapter` enables `batch`.
-- `WatchableKvAdapter` enables `watch`.
+- `ReadableKvCapability` enables `read`, `contains`, and `entry(...).read()`.
+- `WritableKvCapability` enables `write` and `entry(...).write(...)`.
+- `RemovableKvCapability` enables `remove`.
+- `ClearableKvCapability` enables `clear`.
+- `BatchableKvCapability` enables `batch`.
+- `WatchableKvCapability` enables `watch`.
 
 ## Scoped clearing
 
-Adapters accept an optional `prefix`. When a prefix is provided, `clear()` only removes keys inside that scope.
+Adapter packages expose backend-specific codecs that implement `KvStorageCodec`. When a codec has a prefix, `clear()` only removes keys owned by that codec scope.
 
 ```dart
-final kv = KvGateway(SharedPreferencesKvAdapter(prefs, prefix: 'my_app.'));
-await kv.clear(); // Clears only keys that start with my_app.
+final kv = KvGateway(
+  SharedPreferencesKvAdapter(
+    prefs,
+    codec: const SharedPreferencesKvCodec(prefix: 'my_app.'),
+  ),
+);
+
+await kv.clear(); // Clears only keys owned by the codec scope.
 ```
 
 ## Examples

@@ -4,7 +4,12 @@ Flutter secure storage adapter for PolyKV.
 
 ```dart
 const storage = FlutterSecureStorage();
-const kv = KvGateway(SecureStorageKvAdapter(storage, prefix: 'my_app.'));
+const kv = KvGateway(
+  SecureStorageKvAdapter(
+    storage,
+    codec: const SecureStorageKvCodec(prefix: 'my_app.'),
+  ),
+);
 ```
 
 The adapter serializes values to strings before writing them to `flutter_secure_storage`. Platform secure-storage behavior is provided by the underlying plugin.

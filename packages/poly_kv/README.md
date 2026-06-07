@@ -16,7 +16,11 @@ import 'package:poly_kv/poly_kv.dart';
 
 const launchCount = KvKey<int>.withDefault('launch_count', 0);
 
-final kv = KvGateway(MemoryKvAdapter(prefix: 'example.'));
+final kv = KvGateway(
+  MemoryKvAdapter(
+    codec: const MemoryKvCodec(prefix: 'example.'),
+  ),
+);
 await kv.write(launchCount, 1);
 final count = await kv.read(launchCount);
 ```
