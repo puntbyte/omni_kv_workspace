@@ -6,7 +6,7 @@ final class AuthKey<T> extends KvKey<T> {
   const AuthKey.optional(super.name, {super.converter}) : super.optional();
 
   const AuthKey.withDefault(super.name, T super.defaultValue, {super.converter})
-      : super.withDefault();
+    : super.withDefault();
 
   static const token = AuthKey<String?>.optional('auth.token');
 

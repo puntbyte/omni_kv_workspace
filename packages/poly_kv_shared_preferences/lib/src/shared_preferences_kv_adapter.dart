@@ -63,10 +63,7 @@ final class SharedPreferencesKvAdapter
 
   @override
   Future<void> clear() async {
-    final keys = preferences
-        .getKeys()
-        .where(codec.ownsKey)
-        .toList(growable: false);
+    final keys = preferences.getKeys().where(codec.ownsKey).toList(growable: false);
 
     for (final key in keys) {
       await preferences.remove(key);

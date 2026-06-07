@@ -14,7 +14,7 @@ void main() {
     setUp(() {
       FlutterSecureStorage.setMockInitialValues({});
       const storage = FlutterSecureStorage();
-      gateway = KvGateway(SecureStorageKvAdapter(storage));
+      gateway = const KvGateway(SecureStorageKvAdapter(storage));
     });
 
     test('writes and reads strings natively', () async {

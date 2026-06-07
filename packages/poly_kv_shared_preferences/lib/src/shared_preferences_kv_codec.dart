@@ -1,5 +1,9 @@
 import 'package:poly_kv/poly_kv.dart';
 
+import '../poly_kv_shared_preferences.dart' show SharedPreferencesKvAdapter;
+
+import 'shared_preferences_kv_adapter.dart' show SharedPreferencesKvAdapter;
+
 /// Key/value codec used by [SharedPreferencesKvAdapter].
 final class SharedPreferencesKvCodec implements KvStorageCodec {
   const SharedPreferencesKvCodec({this.prefix});
@@ -48,10 +52,10 @@ final class SharedPreferencesKvCodec implements KvStorageCodec {
       bool() => value,
       List<String>() => value,
       _ => throw KvUnsupportedValueException(
-          'SharedPreferencesKvAdapter natively supports String, int, double, '
-          'bool, and List<String>. To store a ${value.runtimeType}, use a '
-          'converter on your KvKey.',
-        ),
+        'SharedPreferencesKvAdapter natively supports String, int, double, '
+        'bool, and List<String>. To store a ${value.runtimeType}, use a '
+        'converter on your KvKey.',
+      ),
     };
   }
 
