@@ -36,8 +36,8 @@ void main() {
     });
 
     test('batch via gateway', () async {
-      await gateway.batch((entry) {
-        entry.app(AppKey.theme).write('system');
+      await gateway.batch((entry) async {
+        await entry.app(AppKey.theme).write('system');
       });
       expect(await gateway.read(AppKey.theme), 'system');
     });

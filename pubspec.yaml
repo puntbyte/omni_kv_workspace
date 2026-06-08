@@ -31,11 +31,21 @@ melos:
       run: melos exec -- dart analyze .
       description: Analyze all packages.
 
+    # --- UPDATE THESE TEST SCRIPTS ---
+
     test:
-      run: melos exec --dir-exists=test -- dart test
-      description: Run all tests.
+      run: melos run test:dart && melos run test:flutter
+      description: Run all tests in the workspace correctly.
+
+    test:dart:
+      run: melos exec --dir-exists=test --no-flutter -- dart test
+      description: Run tests for pure Dart packages.
+
+    test:flutter:
+      run: melos exec --dir-exists=test --flutter -- flutter test
+      description: Run tests for Flutter packages.
 
 dev_dependencies:
   lints: ^6.1.0
-  melos: ^7.8.0
+  melos: ^7.8.1
   very_good_analysis: ^10.2.0

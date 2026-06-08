@@ -6,7 +6,7 @@ import '../../helpers/fake_kv_adapter.dart';
 void main() {
   group('KvEntry Fluent API', () {
     late KvGateway<FakeKvAdapter> gateway;
-    const testKey = KvKey<int>.withDefault('score', 0);
+    const testKey = KvKey<int>('score', defaultValue: 0);
 
     setUp(() {
       gateway = KvGateway(FakeKvAdapter());

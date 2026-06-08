@@ -12,7 +12,7 @@ Future<void> main() async {
     output.step('Theme changed: ${change.previousValue} -> ${change.value}');
   });
 
-  await kv.app(.theme).write(AppTheme.dark);
+  await kv.app(.theme).write(.dark);
   await kv.app(.launchCount).write(1);
   await kv.auth(.userProfile).write({'id': 1, 'role': 'admin'});
 
@@ -21,7 +21,7 @@ Future<void> main() async {
   await output.value('Profile', kv.auth(.userProfile).read());
 
   await kv.batch((entry) async {
-    await entry.app(.theme).write(AppTheme.light);
+    await entry.app(.theme).write(.light);
     await entry.app(.launchCount).write(2);
     await entry.auth(.token).write('memory-token');
     await entry.auth(.token).remove();
@@ -30,9 +30,9 @@ Future<void> main() async {
   await output.value('Theme after batch', kv.app(.theme).read());
   await output.value('Token after batch', kv.auth(.token).read());
 
-  await kv.app.batch((entry) async {
-    await entry(.theme).write(AppTheme.dark);
-    await entry(.launchCount).write(3);
+  await kv.batch((entry) async {
+    await entry.app(.theme).write(.dark);
+    await entry.app(.launchCount).write(3);
   });
 
   await output.value('Theme after app batch', kv.app(.theme).read());

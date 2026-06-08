@@ -1,14 +1,11 @@
 import 'package:poly_kv/poly_kv.dart';
 
 class AppKey<T> extends KvKey<T> {
+  const AppKey(super.name, {required super.defaultValue, super.converter});
+
   const AppKey.required(super.name, {super.converter}) : super.required();
 
-  const AppKey.optional(super.name, {super.converter}) : super.optional();
-
-  const AppKey.withDefault(super.name, T super.defaultValue, {super.converter})
-    : super.withDefault();
-
-  static const theme = AppKey<String>.withDefault('theme', 'dark');
+  static const theme = AppKey<String>('theme', defaultValue: 'dark');
 }
 
 extension AppKeyGatewayX<A extends KvCapability> on KvGateway<A> {

@@ -42,9 +42,9 @@ void main() {
     test('batch writes and removes correctly', () async {
       await gateway.test(.stringVal).write('Old');
 
-      await gateway.batch((entry) {
-        entry.test(.stringVal).remove();
-        entry.test(.intVal).write(99);
+      await gateway.batch((entry) async {
+        await entry.test(.stringVal).remove();
+        await entry.test(.intVal).write(99);
       });
 
       expect(await gateway.test(.stringVal).exists(), isFalse);

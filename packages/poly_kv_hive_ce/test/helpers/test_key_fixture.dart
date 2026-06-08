@@ -1,18 +1,14 @@
 import 'package:poly_kv/poly_kv.dart';
 
-/// A unified collection of keys used across all adapter tests.
 class TestKey<T> extends KvKey<T> {
+  const TestKey(super.name, {required super.defaultValue, super.converter});
+
   const TestKey.required(super.name, {super.converter}) : super.required();
 
-  const TestKey.optional(super.name, {super.converter}) : super.optional();
-
-  const TestKey.withDefault(super.name, T super.defaultValue, {super.converter})
-    : super.withDefault();
-
-  static const userName = TestKey<String>.withDefault('user_name', 'Anonymous');
+  static const userName = TestKey<String>('user_name', defaultValue: 'Anonymous');
   static const score = TestKey<int>.required('score');
 
-  static const theme = TestKey<String>.withDefault('theme', 'system');
+  static const theme = TestKey<String>('theme', defaultValue: 'system');
   static const volume = TestKey<double>.required('volume');
 
   static const stringVal = TestKey<String>.required('str_val');

@@ -43,9 +43,9 @@ void main() {
     test('batch performs operations correctly', () async {
       await gateway.test(.token).write('old_token');
 
-      await gateway.batch((entry) {
-        entry.test(.token).remove();
-        entry.test(.pinCode).write(9999);
+      await gateway.batch((entry) async {
+        await entry.test(.token).remove();
+        await entry.test(.pinCode).write(9999);
       });
 
       expect(await gateway.test(.token).exists(), isFalse);

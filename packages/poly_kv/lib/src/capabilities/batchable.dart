@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../core/kv_adapter.dart';
 import '../core/kv_gateway.dart';
 import '../models/kv_batch.dart';
@@ -67,9 +69,11 @@ final class KvBatchCollectorAdapter implements WritableKvCapability, RemovableKv
 }
 
 extension BatchableKvGatewayExtension<A extends BatchableKvCapability> on KvGateway<A> {
-  Future<void> batch(void Function(KvGateway<KvBatchCollectorAdapter> entry) build) {
+  Future<void> batch(
+    FutureOr<void> Function(KvGateway<KvBatchCollectorAdapter> entry) build,
+  ) async {
     final collector = KvBatchCollectorAdapter();
-    build(KvGateway<KvBatchCollectorAdapter>(collector));
+    await build(KvGateway<KvBatchCollectorAdapter>(collector));
     return adapter.batch(collector.operations);
   }
 }

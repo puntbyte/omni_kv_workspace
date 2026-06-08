@@ -6,33 +6,27 @@ import 'kv_converter.dart';
 /// Missing-value behavior is explicit:
 ///
 /// ```dart
-/// const launchCount = KvKey<int>.withDefault('launch_count', 0);
+/// const launchCount = KvKey<int>('launch_count', defaultValue: 0);
+/// const nickname = KvKey<String?>('nickname', defaultValue: null);
 /// const token = KvKey<String>.required('auth_token');
-/// const nickname = KvKey<String?>.optional('nickname');
 /// ```
 class KvKey<T> {
+  /// Creates a key that returns [defaultValue] when no value exists.
+  ///
+  /// To return `null` when no value exists, use a nullable [T] and provide `null`
+  /// as the default value. For example: `KvKey<String?>('nickname', defaultValue: null)`.
+  const KvKey(
+    this.name, {
+    required this.defaultValue,
+    this.converter,
+  }) : hasDefaultValue = true;
+
   /// Creates a key that throws [KvMissingValueException] when no value exists.
   const KvKey.required(
     this.name, {
     this.converter,
   }) : defaultValue = null,
        hasDefaultValue = false;
-
-  /// Creates a key that returns `null` when no value exists.
-  ///
-  /// Use a nullable [T], for example `KvKey<String?>.optional('nickname')`.
-  const KvKey.optional(
-    this.name, {
-    this.converter,
-  }) : defaultValue = null,
-       hasDefaultValue = true;
-
-  /// Creates a key that returns [defaultValue] when no value exists.
-  const KvKey.withDefault(
-    this.name,
-    this.defaultValue, {
-    this.converter,
-  }) : hasDefaultValue = true;
 
   final String name;
   final T? defaultValue;

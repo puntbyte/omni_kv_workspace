@@ -26,16 +26,16 @@ void main() {
     });
 
     test('batch performs updates', () async {
-      await gateway.batch((entry) {
-        entry.test(TestKey.userName).write('Bob');
-        entry.test(TestKey.score).write(100);
+      await gateway.batch((entry) async {
+        await entry.test(TestKey.userName).write('Bob');
+        await entry.test(TestKey.score).write(100);
       });
 
       expect(await gateway.test(.userName).read(), 'Bob');
       expect(await gateway.test(.score).read(), 100);
 
-      await gateway.batch((entry) {
-        entry.test(TestKey.score).remove();
+      await gateway.batch((entry) async {
+        await entry.test(TestKey.score).remove();
       });
 
       expect(await gateway.test(.score).exists(), isFalse);
