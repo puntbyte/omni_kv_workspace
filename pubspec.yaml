@@ -49,5 +49,3 @@ melos:
     test:flutter:
       run: melos exec --dir-exists=test --flutter -- flutter test
       description: Run tests for Flutter packages.
-
-
