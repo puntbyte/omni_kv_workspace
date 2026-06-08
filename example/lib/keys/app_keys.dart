@@ -1,4 +1,4 @@
-import 'package:poly_kv/poly_kv.dart';
+import 'package:omni_kv/poly_kv.dart';
 
 enum AppTheme { system, light, dark }
 

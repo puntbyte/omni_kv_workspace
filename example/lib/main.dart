@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:poly_kv/poly_kv.dart';
-import 'package:poly_kv_secure_storage/poly_kv_secure_storage.dart';
-import 'package:poly_kv_shared_preferences/poly_kv_shared_preferences.dart';
+import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv_secure_storage/poly_kv_secure_storage.dart';
+import 'package:omni_kv_shared_preferences/poly_kv_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'keys/app_keys.dart';

@@ -1,6 +1,6 @@
-import 'package:poly_kv/poly_kv.dart';
-import 'package:poly_kv_example/keys/app_keys.dart';
-import 'package:poly_kv_example/keys/auth_keys.dart';
+import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv_example/keys/app_keys.dart';
+import 'package:omni_kv_example/keys/auth_keys.dart';
 
 import 'shared/console_output.dart';
 

@@ -1,0 +1,17 @@
+name: omni_kv_hive_ce
+description: Hive CE adapter for PolyKV.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+resolution: workspace
+
+dependencies:
+  hive_ce: ^2.19.3
+  omni_kv: ^0.1.0
+
+dev_dependencies:
+  test: ^1.26.0
+  very_good_analysis: ^10.2.0

@@ -1,15 +1,20 @@
-name: poly_kv_workspace
+name: omni_kv_workspace
 publish_to: none
 
 environment:
   sdk: ^3.10.0
 
 workspace:
-  - packages/poly_kv
-  - packages/poly_kv_shared_preferences
-  - packages/poly_kv_hive_ce
-  - packages/poly_kv_secure_storage
+  - packages/omni_kv
+  - packages/omni_kv_shared_preferences
+  - packages/omni_kv_hive_ce
+  - packages/omni_kv_secure_storage
   - example
+
+dev_dependencies:
+  lints: ^6.1.0
+  melos: ^7.8.1
+  very_good_analysis: ^10.2.0
 
 melos:
   categories:
@@ -45,7 +50,4 @@ melos:
       run: melos exec --dir-exists=test --flutter -- flutter test
       description: Run tests for Flutter packages.
 
-dev_dependencies:
-  lints: ^6.1.0
-  melos: ^7.8.1
-  very_good_analysis: ^10.2.0
+
