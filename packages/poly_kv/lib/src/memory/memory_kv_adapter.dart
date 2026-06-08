@@ -93,10 +93,23 @@ final class MemoryKvAdapter
   }
 
   StreamController<KvChange<Object?>> _controllerFor(String storageKey) {
-    return _controllers.putIfAbsent(
-      storageKey,
-      StreamController<KvChange<Object?>>.broadcast,
+    if (_controllers.containsKey(storageKey)) {
+      return _controllers[storageKey]!;
+    }
+
+    late final StreamController<KvChange<Object?>> controller;
+    controller = StreamController<KvChange<Object?>>.broadcast(
+      onCancel: () async {
+        // Clean up the controller when there are no more listeners
+        if (!controller.hasListener) {
+          await controller.close();
+          _controllers.remove(storageKey);
+        }
+      },
     );
+
+    _controllers[storageKey] = controller;
+    return controller;
   }
 
   void _emit(String storageKey, KvChange<Object?> change) {
