@@ -1,4 +1,4 @@
-import '../../poly_kv.dart' show KvGateway;
+import '../../omni_kv.dart' show KvGateway;
 import 'kv_gateway.dart' show KvGateway;
 import 'kv_storage_codec.dart';
 

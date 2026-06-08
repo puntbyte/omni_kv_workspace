@@ -1,4 +1,4 @@
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 import 'package:omni_kv_example/keys/app_keys.dart';
 import 'package:omni_kv_example/keys/auth_keys.dart';
 

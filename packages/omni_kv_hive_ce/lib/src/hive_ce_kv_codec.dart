@@ -1,4 +1,4 @@
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 
 /// Key/value codec used by `HiveCeKvAdapter`.
 ///

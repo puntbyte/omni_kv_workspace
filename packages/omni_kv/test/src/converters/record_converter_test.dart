@@ -1,4 +1,4 @@
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 import 'package:test/test.dart';
 
 typedef Coords = ({double lat, double lng});

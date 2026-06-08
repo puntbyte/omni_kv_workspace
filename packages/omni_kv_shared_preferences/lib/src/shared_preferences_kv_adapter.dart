@@ -1,4 +1,4 @@
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'shared_preferences_kv_codec.dart';

@@ -1,4 +1,4 @@
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 
 final class AuthKey<T> extends KvKey<T> {
   const AuthKey(super.name, {required super.defaultValue, super.converter});

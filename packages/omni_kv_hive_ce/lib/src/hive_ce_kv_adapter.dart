@@ -1,5 +1,5 @@
 import 'package:hive_ce/hive.dart';
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 
 import 'hive_ce_kv_codec.dart';
 

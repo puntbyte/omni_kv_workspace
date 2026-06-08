@@ -62,7 +62,7 @@ We highly recommend adding a **Namespace Extension** to your `KvGateway`. This e
 boilerplate and allows for beautiful, autocomplete-friendly syntax like `gateway.app(.theme)`.
 
 ```dart
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 
 final class AppKey<T> extends KvKey<T> {
   const AppKey(super.name, {required super.defaultValue, super.converter});
@@ -176,7 +176,7 @@ If the built-in converters don't fit your needs, you can create a custom convert
 `KvConverter<T, S>` (where `T` is your Dart type, and `S` is the storage type).
 
 ```dart
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 
 final class ColorHexConverter implements KvConverter<Color?, int?> {
   const ColorHexConverter();
@@ -214,7 +214,7 @@ To create an adapter, you need two things:
 ### 1. The Codec
 
 ```dart
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 
 final class CustomKvCodec implements KvStorageCodec {
   const CustomKvCodec({this.prefix});

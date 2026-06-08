@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 
 class FakeKvAdapter
     implements

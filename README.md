@@ -53,7 +53,7 @@ poly_kv_workspace/
 Define keys once with their value type and missing-value behavior:
 
 ```dart
-import 'package:omni_kv/poly_kv.dart';
+import 'package:omni_kv/omni_kv.dart';
 
 enum AppTheme { system, light, dark }
 
