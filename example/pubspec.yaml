@@ -14,10 +14,10 @@ dependencies:
   # The Core Package
   omni_kv: ^0.1.0
 
-  # The Local PolyKV Adapters
+  # The Local OmniKV Adapters
   omni_kv_hive_ce: ^0.1.0
-  omni_kv_secure_storage: ^0.1.0
   omni_kv_shared_preferences: ^0.1.0
+  omni_kv_secure_storage: ^0.1.0
 
   # The Official Database SDKs
   hive_ce: ^2.19.3

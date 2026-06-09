@@ -1,7 +1,16 @@
 name: omni_kv_shared_preferences
-description: SharedPreferences adapter for PolyKV.
+description: SharedPreferences adapter for the OmniKV framework.
 version: 0.1.0
-publish_to: none
+
+homepage: https://github.com/puntbyte/omni_kv_workspace
+repository: https://github.com/puntbyte/omni_kv_workspace/tree/main/packages/omni_kv_shared_preferences
+issue_tracker: https://github.com/puntbyte/omni_kv_workspace/issues
+
+topics:
+  - shared-preferences
+  - key-value
+  - storage
+  - preferences
 
 environment:
   sdk: ^3.10.0

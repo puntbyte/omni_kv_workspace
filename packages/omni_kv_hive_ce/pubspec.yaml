@@ -1,7 +1,17 @@
 name: omni_kv_hive_ce
-description: Hive CE adapter for PolyKV.
+description: Hive CE adapter for the OmniKV framework.
 version: 0.1.0
-publish_to: none
+
+homepage: https://github.com/puntbyte/omni_kv_workspace
+repository: https://github.com/puntbyte/omni_kv_workspace/tree/main/packages/omni_kv_hive_ce
+issue_tracker: https://github.com/puntbyte/omni_kv_workspace/issues
+
+topics:
+  - hive
+  - hive-ce
+  - key-value
+  - storage
+  - database
 
 environment:
   sdk: ^3.10.0
