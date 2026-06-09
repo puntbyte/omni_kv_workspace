@@ -55,10 +55,10 @@ void main() {
         emitsInOrder(['dark', null]),
       );
 
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       await gateway.test(.theme).write('dark');
 
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       await gateway.test(.theme).remove();
 
       await expectation;

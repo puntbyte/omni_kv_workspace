@@ -1,10 +1,14 @@
-import 'package:omni_kv/omni_kv.dart';
+import 'package:omni_kv/src/converters/model_converter.dart';
 import 'package:test/test.dart';
 
 class Settings {
-  Settings(this.darkTheme);
+  // 1. Make this a required named parameter
+  Settings({required this.darkTheme});
 
-  factory Settings.fromMap(Map<String, dynamic> map) => Settings(map['darkTheme'] as bool);
+  // 2. Update the factory
+  factory Settings.fromMap(Map<String, dynamic> map) =>
+      Settings(darkTheme: map['darkTheme'] as bool);
+
   final bool darkTheme;
 
   Map<String, dynamic> toMap() => {'darkTheme': darkTheme};
@@ -18,7 +22,8 @@ void main() {
         fromMap: Settings.fromMap,
       );
 
-      final settings = Settings(true);
+      // 3. Update instantiation
+      final settings = Settings(darkTheme: true);
       final encoded = converter.encode(settings);
 
       expect(encoded, '{"darkTheme":true}');
@@ -31,7 +36,8 @@ void main() {
         fromMap: Settings.fromMap,
       );
 
-      final settings = Settings(true);
+      // 4. Update instantiation
+      final settings = Settings(darkTheme: true);
       final encoded = converter.encode(settings);
 
       expect(encoded, isA<Map<String, dynamic>>());
