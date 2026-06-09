@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.svg" alt="OmniKV Logo" width="400">
+  <img src="logo.svg" alt="OmniKV Logo" height="400">
 </p>
 
 # OmniKV
@@ -19,12 +19,12 @@ errors when dealing with app settings, feature flags, auth tokens, and local cac
 - 🛑 **Null-Safety by Design:** Missing values are handled at compile-time. You either provide a
   `defaultValue` or mark the key `.required()` (which throws a descriptive exception if the value is
   missing).
-- 🧩 **Capability-Driven:** Adapters declare what they support (`Readable`, `Writable`, `Watchable`).
-  If a backend doesn't support watching, calling `.watch()` fails at *compile-time*.
+- 🧩 **Capability-Driven:** Adapters declare what they support (`Readable`, `Writable`, 
+  `Watchable`). If a backend doesn't support watching, calling `.watch()` fails at *compile-time*.
 - 🧹 **Safe Scoped Clearing:** Codecs own a `prefix`. Calling `gateway.clear()` only deletes keys
   that belong to your app, leaving third-party package keys untouched.
-- 🧪 **Mock-Free Testing:** Comes with `MemoryKvAdapter` built-in. Test your business logic instantly
-  without mocking platform channels.
+- 🧪 **Mock-Free Testing:** Comes with `MemoryKvAdapter` built-in. Test your business logic 
+  instantly without mocking platform channels.
 
 ## Ecosystem & Installation
 
