@@ -17,16 +17,15 @@ final class JsonConverter<T> implements KvConverter<T?, Object?> {
 
     final decoded = switch (_kind) {
       _JsonKind.object => switch (value) {
-        final Map<String, Object?> object => object,
-        final Map object => object.cast<String, Object?>(),
-        final String string => (jsonDecode(string) as Map).cast<String, Object?>(),
+        final Map<dynamic, dynamic> map => map.cast<String, Object?>(),
+        final String string =>
+          (jsonDecode(string) as Map<dynamic, dynamic>).cast<String, Object?>(),
         _ => throw FormatException('Expected JSON object, got $value'),
       },
 
       _JsonKind.list => switch (value) {
-        final List<Object?> list => list,
-        final List list => list.cast<Object?>(),
-        final String string => (jsonDecode(string) as List).cast<Object?>(),
+        final List<dynamic> list => list.cast<Object?>(),
+        final String string => (jsonDecode(string) as List<dynamic>).cast<Object?>(),
         _ => throw FormatException('Expected JSON list, got $value'),
       },
     };

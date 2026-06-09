@@ -7,16 +7,22 @@ sealed class KvException implements Exception {
   final String message;
   final Object? cause;
 
+  /// The name of the exception. Survives Flutter code obfuscation.
+  String get name => 'KvException';
+
   @override
   String toString() {
     final cause = this.cause;
-    if (cause == null) return '$runtimeType: $message';
-    return '$runtimeType: $message\nCaused by: $cause';
+    if (cause == null) return '$name: $message';
+    return '$name: $message\nCaused by: $cause';
   }
 }
 
 final class KvMissingValueException extends KvException {
   const KvMissingValueException(String key) : super('No value found for key "$key".');
+
+  @override
+  String get name => 'KvMissingValueException';
 }
 
 final class KvTypeException extends KvException {
@@ -24,6 +30,9 @@ final class KvTypeException extends KvException {
     super.message, {
     super.cause,
   });
+
+  @override
+  String get name => 'KvTypeException';
 }
 
 final class KvSerializationException extends KvException {
@@ -31,6 +40,9 @@ final class KvSerializationException extends KvException {
     super.message, {
     super.cause,
   });
+
+  @override
+  String get name => 'KvSerializationException';
 }
 
 final class KvUnsupportedValueException extends KvException {
@@ -38,4 +50,7 @@ final class KvUnsupportedValueException extends KvException {
     super.message, {
     super.cause,
   });
+
+  @override
+  String get name => 'KvUnsupportedValueException';
 }

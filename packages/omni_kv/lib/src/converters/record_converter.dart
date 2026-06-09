@@ -60,7 +60,7 @@ final class _RecordMapConverter<T extends Record> implements RecordConverter<T> 
   @override
   T? decode(Object? value) {
     if (value == null) return null;
-    final map = (value as Map).cast<String, dynamic>();
+    final map = (value as Map<dynamic, dynamic>).cast<String, dynamic>();
     return _fromMap(map);
   }
 }
