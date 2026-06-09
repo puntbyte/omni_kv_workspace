@@ -36,8 +36,6 @@ melos:
       run: melos exec -- dart analyze .
       description: Analyze all packages.
 
-    # --- UPDATE THESE TEST SCRIPTS ---
-
     test:
       run: melos run test:dart && melos run test:flutter
       description: Run all tests in the workspace correctly.

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo2.svg" alt="OmniKV Logo" width="400">
+</p>
+
 # OmniKV
 
 [![pub package](https://img.shields.io/pub/v/omni_kv.svg)](https://pub.dev/packages/omni_kv)
