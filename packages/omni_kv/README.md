@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo2.svg" alt="OmniKV Logo" width="400">
+  <img src="logo.svg" alt="OmniKV Logo" width="400">
 </p>
 
 # OmniKV
