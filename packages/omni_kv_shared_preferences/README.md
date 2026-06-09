@@ -1,17 +1,49 @@
-# poly_kv_shared_preferences
+# OmniKV: SharedPreferences
 
-SharedPreferences adapter for PolyKV.
+[![pub package](https://img.shields.io/pub/v/omni_kv_shared_preferences.svg)](https://pub.dev/packages/omni_kv_shared_preferences)
 
-```dart
-final prefs = await SharedPreferences.getInstance();
-final kv = KvGateway(
-  SharedPreferencesKvAdapter(
-    prefs,
-    codec: const SharedPreferencesKvCodec(prefix: 'my_app.'),
-  ),
-);
+The official `shared_preferences` adapter for [OmniKV](https://pub.dev/packages/omni_kv).
+
+## Installation
+
+You must install both the adapter and the underlying storage package:
+
+```bash
+flutter pub add omni_kv omni_kv_shared_preferences shared_preferences
 ```
 
-Natively supports `String`, `int`, `double`, `bool`, and `List<String>`. Use converters for JSON-like values.
+## Quick Start
 
-When `prefix` is provided, `clear()` only removes SharedPreferences keys that start with that prefix.
+Initialize your `KvGateway` with the `SharedPreferencesKvAdapter`:
+
+```dart
+import 'package:omni_kv/omni_kv.dart';
+import 'package:omni_kv_shared_preferences/omni_kv_shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Future<void> main() async {
+  final prefs = await SharedPreferences.getInstance();
+  
+  final kv = KvGateway(
+    SharedPreferencesKvAdapter(
+      prefs,
+      codec: const SharedPreferencesKvCodec(prefix: 'my_app.'),
+    ),
+  );
+
+  // Ready to use!
+}
+```
+
+## Features & Limitations
+
+- **Native Types:** This adapter natively supports `String`, `int`, `double`, `bool`, and
+  `List<String>`.
+- **Complex Types:** To store custom objects, records, or maps, you must attach a `JsonConverter`,
+  `ModelConverter`, or `RecordConverter` to your `KvKey`.
+- **Scoped Clearing:** If you provide a `prefix` to the codec (e.g., `'my_app.'`), calling
+  `kv.clear()` will **only** delete keys that start with that prefix. Keys created by other packages
+  will remain completely safe.
+
+For full documentation on how to define keys and use the fluent API, see
+the [core OmniKV package](https://pub.dev/packages/omni_kv).
