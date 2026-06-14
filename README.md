@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" alt="OmniKV Logo" height="400">
+</p>
+
 # OmniKV Workspace
 
 [![Dart Platform](https://img.shields.io/badge/Platform-Dart%20%7C%20Flutter-02569B?logo=dart)](https://dart.dev)
