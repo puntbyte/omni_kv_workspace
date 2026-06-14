@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.svg" alt="OmniKV Logo" height="600">
+  <img src="logo.svg" alt="OmniKV Logo" height="400">
 </p>
 
 # OmniKV Workspace
