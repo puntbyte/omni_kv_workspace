@@ -7,18 +7,29 @@ class KvKey<T> {
     required this.defaultValue,
     this.namespace,
     this.converter,
-  }) : hasDefaultValue = true;
+  }) : defaultBuilder = null,
+       hasDefaultValue = true;
+
+  const KvKey.builder(
+    this.id, {
+    required this.defaultBuilder,
+    this.namespace,
+    this.converter,
+  }) : defaultValue = null,
+       hasDefaultValue = true;
 
   const KvKey.required(
     this.id, {
     this.namespace,
     this.converter,
   }) : defaultValue = null,
+       defaultBuilder = null,
        hasDefaultValue = false;
 
   final String id;
   final String? namespace;
   final T? defaultValue;
+  final T Function()? defaultBuilder;
   final bool hasDefaultValue;
   final KvConverter<T?, Object?>? converter;
 
@@ -33,6 +44,7 @@ class KvKey<T> {
 
   T decode(Object? value, {required bool isPresent}) {
     if (!isPresent) {
+      if (defaultBuilder != null) return defaultBuilder!();
       if (hasDefaultValue) return defaultValue as T;
       throw MissingValueKvException(name);
     }

@@ -1,3 +1,10 @@
+// ---- Adapters -----------------------------------------------------------------------------------
+export 'src/adapters/cached_kv_adapter.dart';
+export 'src/adapters/encrypted_kv_codec.dart';
+export 'src/adapters/logging_kv_adapter.dart';
+export 'src/adapters/memory_kv_adapter.dart';
+export 'src/adapters/memory_kv_codec.dart';
+
 // ---- Capabilities -------------------------------------------------------------------------------
 export 'src/capabilities/batchable_capability.dart';
 export 'src/capabilities/clearable_capability.dart';
@@ -21,19 +28,15 @@ export 'src/converters/uri_converter.dart';
 // ---- Core ---------------------------------------------------------------------------------------
 export 'src/core/kv_adapter.dart';
 export 'src/core/kv_capability.dart';
+export 'src/core/kv_codec.dart';
 export 'src/core/kv_converter.dart';
 export 'src/core/kv_entry.dart';
 export 'src/core/kv_gateway.dart';
 export 'src/core/kv_key.dart';
-export 'src/core/kv_codec.dart';
-
-// ---- Memory -------------------------------------------------------------------------------------
-export 'src/memory/memory_kv_adapter.dart';
-export 'src/memory/memory_kv_codec.dart';
 
 // ---- Models -------------------------------------------------------------------------------------
-export 'src/models/kv_operation.dart';
 export 'src/models/kv_change.dart';
+export 'src/models/kv_operation.dart';
 
 // ---- Utilities ----------------------------------------------------------------------------------
 export 'src/utilities/kv_exception.dart';

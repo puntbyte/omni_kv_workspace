@@ -18,7 +18,7 @@ final class MemoryKvAdapter
         WritableKvCapability,
         RemovableKvCapability,
         ClearableKvCapability,
-        WatchableKvCapability,
+        NamespaceWatchableKvCapability,
         BatchableKvCapability {
   MemoryKvAdapter({
     Map<String, Object?>? initialValues,
@@ -28,7 +28,9 @@ final class MemoryKvAdapter
   @override
   final MemoryKvCodec codec;
   final Map<String, Object?> _values;
+
   final Map<String, StreamController<KvChange<Object?>>> _controllers = {};
+  final StreamController<KvChange<Object?>> _globalController = StreamController.broadcast();
 
   Map<String, Object?> get values => Map.unmodifiable(_values);
 
@@ -92,6 +94,12 @@ final class MemoryKvAdapter
     return _controllerFor(codec.storageKey(key)).stream;
   }
 
+  @override
+  Stream<KvChange<Object?>> watchAll([String? prefix]) {
+    if (prefix == null || prefix.isEmpty) return _globalController.stream;
+    return _globalController.stream.where((change) => change.key.startsWith(prefix));
+  }
+
   StreamController<KvChange<Object?>> _controllerFor(String storageKey) {
     if (_controllers.containsKey(storageKey)) {
       return _controllers[storageKey]!;
@@ -100,7 +108,6 @@ final class MemoryKvAdapter
     late final StreamController<KvChange<Object?>> controller;
     controller = StreamController<KvChange<Object?>>.broadcast(
       onCancel: () async {
-        // Clean up the controller when there are no more listeners
         if (!controller.hasListener) {
           await controller.close();
           _controllers.remove(storageKey);
@@ -113,8 +120,14 @@ final class MemoryKvAdapter
   }
 
   void _emit(String storageKey, KvChange<Object?> change) {
+    // Emit to specific key listeners
     final controller = _controllers[storageKey];
-    if (controller == null || controller.isClosed) return;
-    controller.add(change);
+    if (controller != null && !controller.isClosed) {
+      controller.add(change);
+    }
+    // Emit to namespace listeners
+    if (!_globalController.isClosed) {
+      _globalController.add(change);
+    }
   }
 }

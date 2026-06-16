@@ -19,8 +19,9 @@ final class HiveCeKvAdapter
   });
 
   final Box<Object?> box;
+
   @override
-  final HiveCeKvCodec codec;
+  final KvCodec codec;
 
   @override
   Future<Object?> read(String key) async {
