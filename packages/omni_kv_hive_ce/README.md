@@ -42,10 +42,12 @@ Future<void> main() async {
 
 - **Watchable Streams:** Because Hive CE natively supports watching boxes, this adapter implements
   `WatchableKvCapability`. You can call `.watch()` on any key to get a continuous stream of changes.
-- **Native Maps:** Hive natively supports raw Maps and Lists. If you use `ModelConverter.toMap()` or
-  `RecordConverter.toMap()` on your keys, data will be stored natively instead of being stringified
-  to JSON.
-- **Scoped Clearing:** If you provide a `prefix` to the codec, calling `kv.clear()` will **only**
+- **Encryption at Rest:** You can easily wrap `HiveCeKvCodec` in OmniKV's built-in
+  `EncryptedKvCodec` to apply AES encryption to your data before it hits the disk.
+- **Native Maps:** Hive natively supports raw Maps and Lists. If you use `ModelKvConverter.toMap()`
+  or `RecordKvConverter.toMap()` on your keys, data will be stored natively instead of being
+  stringified to JSON.
+- **Scoped Clearing:** By providing a `prefix` to the codec, calling `kv.clear()` will **only**
   delete keys that start with that prefix from the Hive box.
 
 For full documentation on how to define keys and use the fluent API, see

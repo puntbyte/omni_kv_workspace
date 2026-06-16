@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/omni_kv_secure_storage.svg)](https://pub.dev/packages/omni_kv_secure_storage)
 
-The official `flutter_secure_storage` adapter for [OmniKV](https://pub.dev/packages/omni_kv).
+The official `flutter_secure_storage` adapter for [OmniKV](https://pub.dev/packages/omni_kv). 
 Perfect for securely storing auth tokens, API keys, and sensitive user data.
 
 ## Installation
@@ -13,9 +13,11 @@ You must install both the adapter and the underlying storage package:
 flutter pub add omni_kv omni_kv_secure_storage flutter_secure_storage
 ```
 
-## Quick Start
+## Quick Start & The Fast Cache Pattern
 
-Initialize your `KvGateway` with the `SecureStorageKvAdapter`:
+`flutter_secure_storage` can be notoriously slow because it interacts with the Android Keystore and
+iOS Keychain. To achieve **instant synchronous reads** and add **stream support**, we highly
+recommend wrapping it in OmniKV's built-in `CachedKvAdapter`:
 
 ```dart
 import 'package:omni_kv/omni_kv.dart';
@@ -25,14 +27,19 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 void main() {
   const storage = FlutterSecureStorage();
   
+  // Wrap the slow secure storage in an instant memory cache!
   final kv = KvGateway(
-    SecureStorageKvAdapter(
-      storage,
-      codec: const SecureStorageKvCodec(prefix: 'my_app.secure.'),
+    CachedKvAdapter(
+      primary: MemoryKvAdapter(),
+      persistent: SecureStorageKvAdapter(
+        storage,
+        codec: const SecureStorageKvCodec(prefix: 'my_app.secure.'),
+      ),
     ),
   );
 
-  // Ready to use!
+  // You can now read instantly, and even stream secure keys!
+  // kv.auth(.token).watch().listen(...);
 }
 ```
 
@@ -41,8 +48,8 @@ void main() {
 - **Automatic Serialization:** `flutter_secure_storage` only accepts Strings natively. This adapter
   will automatically `jsonEncode` and `jsonDecode` non-string primitives (like integers or maps) for
   you.
-- **Platform Behavior:** All platform-specific secure storage rules (Keychain on iOS,
-  EncryptedSharedPreferences on Android) are provided by the underlying plugin.
+- **Platform Behavior:** All platform-specific secure storage rules are provided by the underlying
+  plugin.
 - **Scoped Clearing:** If you provide a `prefix` to the codec, calling `kv.clear()` will **only**
   remove secure-storage keys that start with that prefix.
 

@@ -14,7 +14,10 @@ flutter pub add omni_kv omni_kv_shared_preferences shared_preferences
 
 ## Quick Start
 
-Initialize your `KvGateway` with the `SharedPreferencesKvAdapter`:
+Initialize your `KvGateway` with the `SharedPreferencesKvAdapter`.
+
+*Pro Tip: SharedPreferences doesn't natively support streams. If you wrap it in
+OmniKV's `CachedKvAdapter`, you gain the ability to `.watch()` your SharedPreferences keys!*
 
 ```dart
 import 'package:omni_kv/omni_kv.dart';
@@ -24,10 +27,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   
+  // Wrapped in CachedKvAdapter to instantly add Stream support to SharedPreferences!
   final kv = KvGateway(
-    SharedPreferencesKvAdapter(
-      prefs,
-      codec: const SharedPreferencesKvCodec(prefix: 'my_app.'),
+    CachedKvAdapter(
+      primary: MemoryKvAdapter(),
+      persistent: SharedPreferencesKvAdapter(
+        prefs,
+        codec: const SharedPreferencesKvCodec(prefix: 'my_app.'),
+      ),
     ),
   );
 
@@ -39,9 +46,9 @@ Future<void> main() async {
 
 - **Native Types:** This adapter natively supports `String`, `int`, `double`, `bool`, and
   `List<String>`.
-- **Complex Types:** To store custom objects, records, or maps, you must attach a `JsonConverter`,
-  `ModelConverter`, or `RecordConverter` to your `KvKey`.
-- **Scoped Clearing:** If you provide a `prefix` to the codec (e.g., `'my_app.'`), calling
+- **Complex Types:** To store custom objects, records, or maps, you must attach a `JsonKvConverter`,
+  `ModelKvConverter`, or `RecordKvConverter` to your `KvKey`.
+- **Scoped Clearing:** By providing a `prefix` to the codec (e.g., `'my_app.'`), calling
   `kv.clear()` will **only** delete keys that start with that prefix. Keys created by other packages
   will remain completely safe.
 
