@@ -1,9 +1,10 @@
 import 'package:omni_kv/omni_kv.dart';
 
 class TestKey<T> extends KvKey<T> {
-  const TestKey(super.name, {required super.defaultValue, super.converter});
+  const TestKey(super.id, {required super.defaultValue, super.converter})
+    : super(namespace: 'test');
 
-  const TestKey.required(super.name, {super.converter}) : super.required();
+  const TestKey.required(super.id, {super.converter}) : super.required(namespace: 'test');
 
   static const userName = TestKey<String>('user_name', defaultValue: 'Anonymous');
   static const score = TestKey<int>.required('score');

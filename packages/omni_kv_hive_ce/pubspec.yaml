@@ -23,5 +23,6 @@ dependencies:
   omni_kv: ^0.1.0
 
 dev_dependencies:
+  omni_kv_testing: any
   test: ^1.26.0
   very_good_analysis: ^10.2.0

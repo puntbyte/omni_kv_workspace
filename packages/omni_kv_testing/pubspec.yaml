@@ -1,0 +1,14 @@
+name: omni_kv_testing
+description: Internal test utilities for the OmniKV workspace.
+publish_to: none # Prevents accidental publishing to pub.dev
+
+environment:
+  sdk: ^3.10.0
+
+resolution: workspace
+
+dependencies:
+  omni_kv: ^0.1.0
+
+dev_dependencies:
+  very_good_analysis: ^10.2.0

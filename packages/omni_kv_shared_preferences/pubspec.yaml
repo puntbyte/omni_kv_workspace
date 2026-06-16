@@ -27,5 +27,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  omni_kv_testing: any
   test: ^1.26.0
   very_good_analysis: ^10.2.0

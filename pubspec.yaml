@@ -10,6 +10,7 @@ workspace:
   - packages/omni_kv_shared_preferences
   - packages/omni_kv_hive_ce
   - packages/omni_kv_secure_storage
+  - packages/omni_kv_testing
   - example
 
 dev_dependencies:
