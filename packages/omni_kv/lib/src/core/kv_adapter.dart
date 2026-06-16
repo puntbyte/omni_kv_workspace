@@ -1,7 +1,7 @@
 import '../../omni_kv.dart' show KvGateway;
 import 'kv_capability.dart';
 import 'kv_gateway.dart' show KvGateway;
-import 'kv_storage_codec.dart';
+import 'kv_codec.dart';
 
 /// Base interface for real storage adapters.
 ///

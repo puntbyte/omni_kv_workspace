@@ -1,3 +1,7 @@
+import '../capabilities/watchable_capability.dart';
+
+/// Represents a change to a key-value entry, emitted by adapters that
+/// implement [WatchableKvCapability].
 sealed class KvChange<T> {
   const KvChange({
     required this.key,
@@ -10,16 +14,18 @@ sealed class KvChange<T> {
   final T? previousValue;
 }
 
-final class KvValueChanged<T> extends KvChange<T> {
-  const KvValueChanged({
+/// Emitted when a value is written or updated.
+final class KvUpdateChange<T> extends KvChange<T> {
+  const KvUpdateChange({
     required super.key,
     required super.value,
     required super.previousValue,
   });
 }
 
-final class KvValueRemoved<T> extends KvChange<T> {
-  const KvValueRemoved({
+/// Emitted when a value is removed.
+final class KvRemoveChange<T> extends KvChange<T> {
+  const KvRemoveChange({
     required super.key,
     required super.previousValue,
   }) : super(value: null);

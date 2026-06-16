@@ -25,14 +25,14 @@ export 'src/core/kv_converter.dart';
 export 'src/core/kv_entry.dart';
 export 'src/core/kv_gateway.dart';
 export 'src/core/kv_key.dart';
-export 'src/core/kv_storage_codec.dart';
+export 'src/core/kv_codec.dart';
 
 // ---- Memory -------------------------------------------------------------------------------------
 export 'src/memory/memory_kv_adapter.dart';
 export 'src/memory/memory_kv_codec.dart';
 
 // ---- Models -------------------------------------------------------------------------------------
-export 'src/models/kv_batch.dart';
+export 'src/models/kv_operation.dart';
 export 'src/models/kv_change.dart';
 
 // ---- Utilities ----------------------------------------------------------------------------------

@@ -1,37 +1,29 @@
 import '../utilities/kv_exception.dart';
 import 'kv_converter.dart';
 
-/// A typed key. The key carries the Dart value type [T].
-///
-/// Missing-value behavior is explicit:
-///
-/// ```dart
-/// const launchCount = KvKey<int>('launch_count', defaultValue: 0);
-/// const nickname = KvKey<String?>('nickname', defaultValue: null);
-/// const token = KvKey<String>.required('auth_token');
-/// ```
 class KvKey<T> {
-  /// Creates a key that returns [defaultValue] when no value exists.
-  ///
-  /// To return `null` when no value exists, use a nullable [T] and provide `null`
-  /// as the default value. For example: `KvKey<String?>('nickname', defaultValue: null)`.
   const KvKey(
-    this.name, {
+    this.id, {
     required this.defaultValue,
+    this.namespace,
     this.converter,
   }) : hasDefaultValue = true;
 
-  /// Creates a key that throws [MissingValueKvException] when no value exists.
   const KvKey.required(
-    this.name, {
+    this.id, {
+    this.namespace,
     this.converter,
   }) : defaultValue = null,
        hasDefaultValue = false;
 
-  final String name;
+  final String id;
+  final String? namespace;
   final T? defaultValue;
   final bool hasDefaultValue;
   final KvConverter<T?, Object?>? converter;
+
+  /// The fully qualified name of the key (e.g. "app.launch_count")
+  String get name => namespace != null && namespace!.isNotEmpty ? '$namespace.$id' : id;
 
   Object? encode(T value) {
     if (value == null) return null;
