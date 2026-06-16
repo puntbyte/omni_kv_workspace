@@ -58,13 +58,13 @@ final class HiveCeKvAdapter
 
     return box.watch(key: storageKey).map((event) {
       if (event.deleted) {
-        return KvValueRemoved<Object?>(
+        return KvRemoveChange<Object?>(
           key: key,
           previousValue: null,
         );
       }
 
-      return KvValueChanged<Object?>(
+      return KvUpdateChange<Object?>(
         key: key,
         value: codec.decode(event.value),
         previousValue: null,

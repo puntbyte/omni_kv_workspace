@@ -1,4 +1,3 @@
-import '../core/kv_adapter.dart';
 import '../core/kv_capability.dart';
 import '../core/kv_entry.dart';
 import '../core/kv_gateway.dart';
@@ -13,14 +12,14 @@ abstract mixin class ReadableKvCapability implements KvCapability {
 
 extension ReadableKvGatewayExtension<A extends ReadableKvCapability> on KvGateway<A> {
   Future<T> read<T>(KvKey<T> key) async {
-    final hasValue = await adapter.contains(key.name);
-    final raw = hasValue ? await adapter.read(key.name) : null;
+    final hasValue = await adapter.contains(key.id);
+    final raw = hasValue ? await adapter.read(key.id) : null;
     return key.decode(raw, isPresent: hasValue);
   }
 
   Future<T> get<T>(KvKey<T> key) => read(key);
 
-  Future<bool> contains<T>(KvKey<T> key) => adapter.contains(key.name);
+  Future<bool> contains<T>(KvKey<T> key) => adapter.contains(key.id);
 }
 
 extension ReadableKvEntryExtension<T, A extends ReadableKvCapability> on KvEntry<T, A> {

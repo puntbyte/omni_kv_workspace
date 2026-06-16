@@ -1,14 +1,14 @@
 import 'package:omni_kv/omni_kv.dart';
 
 final class AuthKey<T> extends KvKey<T> {
-  const AuthKey(super.name, {required super.defaultValue, super.converter});
+  const AuthKey(super.id, {required super.defaultValue, super.converter}): super(namespace: 'auth');
 
-  const AuthKey.required(super.name, {super.converter}) : super.required();
+  const AuthKey.required(super.id, {super.converter}) : super.required(namespace: 'auth');
 
-  static const token = AuthKey<String?>('auth.token', defaultValue: null);
+  static const token = AuthKey<String?>('token', defaultValue: null);
 
   static const userProfile = AuthKey<Map<String, Object?>?>(
-    'auth.user_profile',
+    'user_profile',
     defaultValue: null,
     converter: JsonKvConverter.toObject(),
   );

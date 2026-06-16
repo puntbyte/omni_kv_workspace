@@ -1,9 +1,9 @@
 import 'package:omni_kv/omni_kv.dart';
 
 class AppKey<T> extends KvKey<T> {
-  const AppKey(super.name, {required super.defaultValue, super.converter});
+  const AppKey(super.id, {required super.defaultValue, super.converter});
 
-  const AppKey.required(super.name, {super.converter}) : super.required();
+  const AppKey.required(super.id, {super.converter}) : super.required();
 
   static const theme = AppKey<String>('theme', defaultValue: 'dark');
 }

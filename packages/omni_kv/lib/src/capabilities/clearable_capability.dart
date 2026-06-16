@@ -1,4 +1,3 @@
-import '../core/kv_adapter.dart';
 import '../core/kv_capability.dart';
 import '../core/kv_gateway.dart';
 

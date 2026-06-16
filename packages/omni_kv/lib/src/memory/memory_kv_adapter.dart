@@ -55,7 +55,7 @@ final class MemoryKvAdapter
     _values[storageKey] = encoded;
     _emit(
       storageKey,
-      KvValueChanged<Object?>(
+      KvUpdateChange<Object?>(
         key: key,
         value: encoded,
         previousValue: previous,
@@ -71,7 +71,7 @@ final class MemoryKvAdapter
     final previous = _values.remove(storageKey);
     _emit(
       storageKey,
-      KvValueRemoved<Object?>(
+      KvRemoveChange<Object?>(
         key: key,
         previousValue: previous,
       ),

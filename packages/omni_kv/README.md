@@ -1,8 +1,8 @@
+# OmniKV
+
 <p align="center">
   <img src="../../logo.svg" alt="OmniKV Logo" height="400">
 </p>
-
-# OmniKV
 
 [![pub package](https://img.shields.io/pub/v/omni_kv.svg)](https://pub.dev/packages/omni_kv)
 [![Dart Platform](https://img.shields.io/badge/Platform-Dart%20%7C%20Flutter-02569B?logo=dart)](https://dart.dev)
@@ -10,35 +10,52 @@
 **OmniKV** is a strongly-typed, storage-agnostic key-value framework for Dart and Flutter.
 
 It is designed to completely eliminate magic strings, implicit type casting, and runtime parsing
-errors when dealing with app settings, feature flags, auth tokens, and local caches.
+errors when dealing with app settings, feature flags, auth tokens, and local caches. By utilizing
+modern Dart 3 features (dot shorthands, records, exhaustive switches), it provides the most
+ergonomic and type-safe storage API available.
 
-## Why OmniKV?
+### Why OmniKV?
 
 - 🛡️ **Absolute Type Safety:** Keys are bound to their Dart types (`KvKey<int>`). No more
   `prefs.getInt('magic_string') as int`.
 - 🛑 **Null-Safety by Design:** Missing values are handled at compile-time. You either provide a
   `defaultValue` or mark the key `.required()` (which throws a descriptive exception if the value is
   missing).
-- 🧩 **Capability-Driven:** Adapters declare what they support (`Readable`, `Writable`, 
-  `Watchable`). If a backend doesn't support watching, calling `.watch()` fails at *compile-time*.
-- 🧹 **Safe Scoped Clearing:** Codecs own a `prefix`. Calling `gateway.clear()` only deletes keys
-  that belong to your app, leaving third-party package keys untouched.
-- 🧪 **Mock-Free Testing:** Comes with `MemoryKvAdapter` built-in. Test your business logic 
-  instantly without mocking platform channels.
+- 🧩 **Capability-Driven:** Adapters declare what they support (`Readable`, `Writable`, `Watchable`).
+  If a backend doesn't support watching, calling `.watch()` fails at *compile-time*.
+- 🧹 **Safe Scoped Clearing:** Codecs own a `prefix`, and Keys own a `namespace`. Calling
+  `gateway.clear()` only deletes keys that belong to your app, leaving third-party package keys
+  untouched.
+- 🧪 **Mock-Free Testing:** Comes with `MemoryKvAdapter` built-in. Test your business logic instantly
+  without mocking platform channels.
 
-## Ecosystem & Installation
+---
+
+## Table of Contents
+
+1. [Installation](#1-installation)
+2. [Defining Keys & Namespaces](#2-defining-keys--namespaces)
+3. [Initializing the Gateway](#3-initializing-the-gateway)
+4. [Operations (Read, Write, Watch, Batch)](#4-operations-read-write-watch-batch)
+5. [Converters API](#5-converters-api)
+6. [Capabilities Architecture (For AI & Advanced Devs)](#6-capabilities-architecture)
+7. [Creating Custom Adapters](#7-creating-custom-adapters)
+
+---
+
+## 1. Installation
 
 OmniKV is split into a pure-Dart core and multiple backend adapters.
 
-**1. Add the core package:**
+### 1.1 Using the Command Line
 
+**Add the core package (Pure Dart / Testing):**
 ```bash
 dart pub add omni_kv
 ```
 
-**2. Add an adapter and its required storage SDK (Optional):**
-If you want to use a specific backend (like SharedPreferences), you must install both the OmniKV
-adapter *and* the official storage package.
+**Add an adapter and its required storage SDK (Flutter):**
+If you want to use a specific backend, install both the OmniKV adapter *and* the official storage package.
 
 ```bash
 flutter pub add omni_kv_shared_preferences shared_preferences
@@ -48,70 +65,108 @@ flutter pub add omni_kv_secure_storage flutter_secure_storage
 flutter pub add omni_kv_hive_ce hive_ce
 ```
 
+### 1.2 Using `pubspec.yaml`
+
+Alternatively, manually add the dependencies to your `pubspec.yaml` file:
+
+```yaml
+dependencies:
+  # Core framework (includes MemoryKvAdapter)
+  omni_kv: ^0.1.0
+  
+  # Example: SharedPreferences Adapter
+  shared_preferences: ^2.5.5
+  omni_kv_shared_preferences: ^0.1.0
+```
+
 ---
 
-## Quick Start
+## 2. Defining Keys & Namespaces
 
-### 1. Define your Keys (The Recommended Way)
+The core philosophy of OmniKV is centralizing key definitions and leveraging **Dart 3.10 dot
+shorthands** for maximum ergonomics.
 
-Centralize your keys in one file. OmniKV uses a 2-constructor design to optimize for the most common
-use-cases while strictly enforcing null-safety:
-
-* **The Unnamed Constructor:** Used for 90% of keys. It enforces a `defaultValue` (which can be
-  `null` if the type is nullable).
-* **The `.required()` Constructor:** Used for edge cases where missing data is a critical error. It
-  throws a `KvMissingValueException` if the value is absent.
-
-We highly recommend adding a **Namespace Extension** to your `KvGateway`. This eliminates
-boilerplate and allows for beautiful, autocomplete-friendly syntax like `gateway.app(.theme)`.
+We define a custom Key class that extends `KvKey<T>` and assigns a `namespace`. Then, we create an
+`extension` on `KvGateway`. This extension acts as a gateway scope, allowing the compiler to resolve
+dot shorthands contextually.
 
 ```dart
 import 'package:omni_kv/omni_kv.dart';
 
+// 1. Define your scoped Key class
 final class AppKey<T> extends KvKey<T> {
-  const AppKey(super.name, {required super.defaultValue, super.converter});
+  // We inject the namespace 'app' into the super constructor.
+  const AppKey(super.id, {required super.defaultValue, super.converter}) 
+      : super(namespace: 'app');
 
-  const AppKey.required(super.name, {super.converter}) : super.required();
+  const AppKey.required(super.id, {super.converter}) 
+      : super.required(namespace: 'app');
 
   // A key with a default value
-  static const launchCount = AppKey<int>('app.launch_count', defaultValue: 0);
+  static const launchCount = AppKey<int>('launch_count', defaultValue: 0);
 
   // An optional key (defaultValue is null)
-  static const userName = AppKey<String?>('app.user_name', defaultValue: null);
+  static const userName = AppKey<String?>('user_name', defaultValue: null);
 
-  // A required key (throws if missing)
-  static const token = AppKey<String>.required('app.token');
+  // A required key (throws MissingValueKvException if missing)
+  static const token = AppKey<String>.required('token');
 }
 
-// THE NAMESPACE EXTENSION
+// 2. THE NAMESPACE EXTENSION
 // This allows you to write: kv.app(.launchCount)
 extension AppKvGatewayNamespace<A extends KvCapability> on KvGateway<A> {
   KvEntry<T, A> app<T>(AppKey<T> key) => entry(key);
 }
 ```
 
-### 2. Initialize the Gateway
+---
 
-Wrap your chosen adapter in a `KvGateway`.
+## 3. Initializing the Gateway
+
+To interact with storage, you wrap an Adapter inside a `KvGateway`. The Gateway provides the fluent
+API, while the Adapter handles the raw storage execution.
 
 ```dart
-// Using the built-in Memory adapter for pure Dart / Testing
-final kv = KvGateway(
-  MemoryKvAdapter(
-    codec: const MemoryKvCodec(prefix: 'my_app.'),
-  ),
-);
+import 'package:omni_kv/omni_kv.dart';
+import 'package:omni_kv_shared_preferences/omni_kv_shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Future<void> main() async {
+  // Using SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+  final sharedKv = KvGateway(
+    SharedPreferencesKvAdapter(
+      prefs,
+      codec: const SharedPreferencesKvCodec(prefix: 'my_company.my_app.'),
+    ),
+  );
+
+  // Using Memory (Perfect for Unit Testing!)
+  final memoryKv = KvGateway(
+    MemoryKvAdapter(
+      codec: const MemoryKvCodec(prefix: 'test_env.'),
+    ),
+  );
+}
 ```
 
-### 3. Read, Write, and Remove
+> **Note on Prefixes vs Namespaces:**
+> The `Codec(prefix: 'my_company.')` ensures your app doesn't wipe out other plugins' data on the
+> device.
+> The `KvKey(namespace: 'app')` organizes your logical keys internally.
+> The final underlying storage key becomes: `my_company.app.launch_count`.
 
-Use the fluent namespace API to interact with your keys.
+---
 
+## 4. Operations (Read, Write, Watch, Batch)
+
+Once your gateway is set up, you use the namespace extension (e.g., `.app`) alongside Dart's dot
+shorthand to interact with your data.
+
+### 4.1 Standard Operations
 ```dart
 // Write
-await
-kv.app
-(.launchCount).write(1);
+await kv.app(.launchCount).write(1);
 
 // Read (returns 1)
 final count = await kv.app(.launchCount).read();
@@ -121,104 +176,197 @@ final hasToken = await kv.app(.token).exists();
 
 // Remove
 await kv.app(.token).remove();
+
+// Clear (Safely deletes ONLY keys starting with your Codec prefix)
+await kv.clear();
 ```
 
-### 4. Batch Operations
+### 4.2 Reactive Watching
 
-OmniKV supports asynchronous, ordered execution of multiple operations.
+If your adapter supports `WatchableKvCapability` (like Memory or Hive CE), you can stream changes
+natively.
 
 ```dart
-await
-kv.batch((tx) async {
+final subscription = kv.app(.launchCount).watch().listen((change) {
+  print('Changed from ${change.previousValue} to ${change.value}');
+});
+```
+
+### 4.3 Batching
+
+OmniKV supports asynchronous, ordered execution of multiple operations. Adapters that support
+transactional batching will optimize this under the hood.
+
+```dart
+await kv.batch((tx) async {
   await tx.app(.launchCount).write(3);
   await tx.app(.userName).write('Alice');
   await tx.app(.token).remove();
 });
 ```
-
 ---
 
-## Advanced Usage
+## 5. Converters
 
-### Capabilities
+Converters transform complex Dart types into primitive storage types supported by the underlying
+database. OmniKV includes a comprehensive set of built-in converters for common use cases.
 
-OmniKV's API is fully modular. The methods available on `KvGateway` depend entirely on what
-interfaces the underlying adapter implements. This ensures you never attempt an unsupported
-operation at runtime.
+### 5.1 Built-in Converters
 
-Available capabilities include:
+#### `BigIntKvConverter`
 
-- `ReadableKvCapability`: Enables `.read()` and `.exists()`.
-- `WritableKvCapability`: Enables `.write()`.
-- `RemovableKvCapability`: Enables `.remove()`.
-- `ClearableKvCapability`: Enables `.clear()`.
-- `WatchableKvCapability`: Enables `.watch()` (Streams value changes).
-- `BatchableKvCapability`: Enables `.batch()`.
+Stores `BigInt` values as strings.
 
-### Converters
+- `BigIntKvConverter.toString()`
+    - Encodes `BigInt` → `String`
+    - Safely preserves arbitrarily large numbers
 
-Converters translate complex Dart types into primitive types safe for databases.
+#### `CollectionKvConverter`
 
-#### Supported Built-in Converters:
+Converters for collection types.
 
-- `BigIntConverter`: `.toString()`
-- `CollectionConverter`: `ListConverter`, `SetConverter`
-- `DateTimeConverter`: `.toIsoString()`, `.toMilliseconds()`
-- `DurationConverter`: `.toMilliseconds()`
-- `EnumConverter`: `.toName()`, `.toIndex()`
-- `JsonConverter`: `.toObject()`, `.toList()`
-- `ModelConverter`: `.toMap()`, `.toJsonString()`
-- `RecordConverter`: `.toMap()`, `.toJsonString()`
-- `UriConverter`: `.toString()`
-- `InlineConverter`: (Takes quick `onEncode` and `onDecode` callbacks)
+- `ListKvConverter(elementConverter)`
+    - Applies a converter to each list element
 
-#### Custom Converters
+- `SetKvConverter(elementConverter)`
+    - Encodes `Set<T>` as `List<S>`
+    - Decodes stored lists back into sets
 
-If the built-in converters don't fit your needs, you can create a custom converter by implementing
-`KvConverter<T, S>` (where `T` is your Dart type, and `S` is the storage type).
+#### `DateTimeKvConverter`
+
+Converters for `DateTime` values.
+
+- `DateTimeKvConverter.toIsoString()`
+    - Encodes `DateTime` as an ISO 8601 string
+    - Recommended for string-based storage backends such as SharedPreferences and SecureStorage
+
+- `DateTimeKvConverter.toMilliseconds()`
+    - Encodes `DateTime` as milliseconds since epoch
+    - Recommended for high-performance local storage such as Hive and memory caches
+
+#### `DurationKvConverter`
+
+Stores `Duration` values as integers.
+
+- `DurationKvConverter.toMilliseconds()`
+    - Encodes `Duration` as total milliseconds
+
+#### `EnumKvConverter`
+
+Converters for enum values.
+
+- `EnumKvConverter.toName(Enum.values)`
+    - Stores the enum name (for example, `'dark'`)
+    - Recommended for long-term persistence because it remains stable when enum order changes
+
+- `EnumKvConverter.toIndex(Enum.values)`
+    - Stores the enum index as an integer
+    - More compact, but can break if enum values are reordered
+
+#### `JsonKvConverter`
+
+Converters for JSON-compatible structures.
+
+- `JsonKvConverter.toObject()`
+    - Assumes `Map<String, dynamic>`
+
+- `JsonKvConverter.toList()`
+    - Assumes `List<dynamic>`
+
+#### `ModelKvConverter`
+
+Converters for custom model classes.
+
+- `ModelKvConverter.toJsonString(...)`
+    - Encodes models as JSON strings
+    - Ideal for string-only storage backends such as SharedPreferences and SecureStorage
+
+- `ModelKvConverter.toMap(...)`
+    - Encodes models as raw maps
+    - Ideal for databases with native map support, such as Hive
+
+#### `RecordKvConverter`
+
+Converters for Dart 3 records.
+
+- `RecordKvConverter.toJsonString(...)`
+- `RecordKvConverter.toMap(...)`
+
+These work similarly to `ModelKvConverter`, but are designed for Dart records.
+
+#### `UriKvConverter`
+
+Stores `Uri` values as strings.
+
+- `UriKvConverter.toString()`
+    - Encodes `Uri` ↔ `String`
+
+### 5.2 Inline Converter
+
+For simple one-off conversions, use `InlineKvConverter` instead of creating a dedicated converter
+class.
 
 ```dart
-import 'package:omni_kv/omni_kv.dart';
 
-final class ColorHexConverter implements KvConverter<Color?, int?> {
-  const ColorHexConverter();
-
-  @override
-  int? encode(Color? value) => value?.value;
-
-  @override
-  Color? decode(Object? value) {
-    if (value == null) return null;
-    return Color(value as int);
-  }
-}
-
-// Usage:
-static const themeColor = AppKey<Color>(
-  'app.color',
-  defaultValue: Color(0xFF000000),
-  converter: ColorHexConverter(),
+static const userId = AppKey<UserId>(
+  'user_id',
+  defaultValue: UserId(0),
+  converter: InlineKvConverter<UserId, int>(
+    onEncode: (id) => id.value,
+    onDecode: (value) => UserId(value! as int),
+  ),
 );
 ```
 
+### 5.3 Custom Converter
+
+To create a reusable converter, implement `KvConverter<T, S>`:
+
+- `T` — the Dart type used by your application
+- `S` — the primitive type stored by the database
+
+Custom converters allow OmniKV to work with any domain-specific type while maintaining type safety
+throughout your application.
+
 ---
 
-## Creating a Custom Adapter
+## 6. Capabilities Architecture
 
-OmniKV is storage-agnostic. You can easily build your own adapter for `Isar`, `Sqflite`, `Drift`, or
-a custom remote API.
+**For AI Code Agents and Architecture Reviewers:**
 
-To create an adapter, you need two things:
+OmniKV adheres strictly to the **Interface Segregation Principle (ISP)**. The `KvGateway` itself has
+no methods. Instead, it exposes extension methods conditionally based on the `KvCapability` mixins
+implemented by the underlying `KvAdapter`.
 
-1. A **Codec** (`KvStorageCodec`) to handle key-prefixing and raw type validation.
-2. The **Adapter** (`KvAdapter`) that talks to your database.
+This means if you attempt to call `.watch()` on the `SharedPreferencesKvAdapter` (which does not
+implement `WatchableKvCapability`), the code will **fail to compile**.
 
-### 1. The Codec
+Available capabilities:
+*   `ReadableKvCapability`: Exposes `.read()` and `.exists()`.
+*   `WritableKvCapability`: Exposes `.write()`.
+*   `RemovableKvCapability`: Exposes `.remove()`.
+*   `ClearableKvCapability`: Exposes `.clear()`.
+*   `WatchableKvCapability`: Exposes `.watch()`.
+*   `BatchableKvCapability`: Exposes `.batch()`.
+
+---
+
+## 7. Creating Custom Adapters
+
+OmniKV is entirely storage-agnostic. You can easily build an adapter for `Isar`, `Sqflite`, `Drift`,
+or even a remote REST API.
+
+To create an adapter, you must implement two components:
+
+1. **The Codec** (`KvStorageCodec`): Manages prefixing to isolate keys.
+2. **The Adapter** (`KvAdapter`): The concrete class implementing the capabilities.
+
+### 7.1. The Codec Implementation
 
 ```dart
 import 'package:omni_kv/omni_kv.dart';
 
-final class CustomKvCodec implements KvStorageCodec {
+final class CustomKvCodec implements KvCodec {
   const CustomKvCodec({this.prefix});
 
   final String? prefix;
@@ -247,11 +395,11 @@ final class CustomKvCodec implements KvStorageCodec {
 }
 ```
 
-### 2. The Adapter
+### 7.2. The Adapter Implementation
 
 ```dart
 final class CustomKvAdapter
-    with SequentialKvBatchCapability // Provides basic batching automatically
+    with SequentialKvBatchCapability // Mixin that provides default sequential batching
     implements
         KvAdapter,
         ReadableKvCapability,
@@ -263,7 +411,7 @@ final class CustomKvAdapter
   final MyDatabase database;
 
   @override
-  final KvStorageCodec codec;
+  final KvCodec codec;
 
   @override
   Future<Object?> read(String key) async {

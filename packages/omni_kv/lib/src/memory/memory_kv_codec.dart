@@ -1,4 +1,4 @@
-import '../core/kv_storage_codec.dart';
+import '../core/kv_codec.dart';
 
 /// Key/value codec used by `MemoryKvAdapter`.
 final class MemoryKvCodec implements KvCodec {

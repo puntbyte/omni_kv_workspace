@@ -2,8 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:omni_kv/omni_kv.dart';
 import 'package:omni_kv_secure_storage/omni_kv_secure_storage.dart';
-
-import '../helpers/test_key_fixture.dart';
+import 'package:omni_kv_testing/omni_kv_testing.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

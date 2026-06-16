@@ -3,9 +3,9 @@ import 'package:omni_kv/omni_kv.dart';
 enum AppTheme { system, light, dark }
 
 final class AppKey<T> extends KvKey<T> {
-  const AppKey(super.name, {required super.defaultValue, super.converter});
+  const AppKey(super.id, {required super.defaultValue, super.converter}) : super(namespace: 'app');
 
-  const AppKey.required(super.name, {super.converter}) : super.required();
+  const AppKey.required(super.id, {super.converter}) : super.required(namespace: 'app');
 
   static const theme = AppKey<AppTheme>(
     'app.theme',
@@ -13,18 +13,18 @@ final class AppKey<T> extends KvKey<T> {
     converter: EnumKvConverter.toName(AppTheme.values),
   );
 
-  static const launchCount = AppKey<int>('app.launch_count', defaultValue: 0);
+  static const launchCount = AppKey<int>('launch_count', defaultValue: 0);
 
-  static const userName = AppKey<String?>('app.user_name', defaultValue: null);
+  static const userName = AppKey<String?>('user_name', defaultValue: null);
 
   static const lastOpenedAt = AppKey<DateTime?>(
-    'app.last_opened_at',
+    'last_opened_at',
     defaultValue: null,
     converter: DateTimeKvConverter.toIsoString(),
   );
 
   static const profile = AppKey<Map<String, Object?>?>(
-    'app.profile',
+    'profile',
     defaultValue: null,
     converter: JsonKvConverter.toObject(),
   );

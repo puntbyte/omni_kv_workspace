@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import '../core/kv_adapter.dart';
 import '../core/kv_capability.dart';
 import '../core/kv_gateway.dart';
-import '../models/kv_batch.dart';
+import '../models/kv_operation.dart';
 import 'removable_capability.dart';
 import 'writable_capability.dart';
 
@@ -12,14 +11,11 @@ import 'writable_capability.dart';
 /// Batch execution is ordered. It does not guarantee atomic rollback unless a
 /// specific adapter documents that behavior.
 abstract mixin class BatchableKvCapability implements KvCapability {
-  Future<void> batch(List<KvBatchOperation> operations);
+  Future<void> batch(List<KvOperation> operations);
 }
 
 /// Reusable sequential batch behavior for adapters that already support writes
 /// and removals.
-///
-/// This is not transactional. Operations run in order. If one operation fails,
-/// earlier operations are not automatically rolled back.
 mixin SequentialKvBatchCapability
     implements BatchableKvCapability, WritableKvCapability, RemovableKvCapability {
   @override
@@ -29,34 +25,34 @@ mixin SequentialKvBatchCapability
   Future<void> remove(String key);
 
   @override
-  Future<void> batch(List<KvBatchOperation> operations) async {
+  Future<void> batch(List<KvOperation> operations) async {
     for (final operation in operations) {
       switch (operation) {
-        case KvBatchWrite(:final key, :final value):
+        case KvWriteOperation(:final key, :final value):
           await write(key, value);
-        case KvBatchRemove(:final key):
+        case KvRemoveOperation(:final key):
           await remove(key);
       }
     }
   }
 }
 
-/// Collects batch operations through the normal fluent entry API.
-final class KvBatchCollectorAdapter implements WritableKvCapability, RemovableKvCapability {
-  KvBatchCollectorAdapter();
+/// Collects operations through the normal fluent entry API without executing them.
+final class KvOperationRecorder implements WritableKvCapability, RemovableKvCapability {
+  KvOperationRecorder();
 
-  final List<KvBatchOperation> _operations = [];
+  final List<KvOperation> _operations = [];
 
-  List<KvBatchOperation> get operations {
-    return List<KvBatchOperation>.unmodifiable(_operations);
+  List<KvOperation> get operations {
+    return List<KvOperation>.unmodifiable(_operations);
   }
 
   @override
   Future<void> write(String key, Object? value) {
     if (value == null) {
-      _operations.add(KvBatchRemove(key));
+      _operations.add(KvRemoveOperation(key));
     } else {
-      _operations.add(KvBatchWrite(key, value));
+      _operations.add(KvWriteOperation(key, value));
     }
 
     return Future<void>.value();
@@ -64,17 +60,21 @@ final class KvBatchCollectorAdapter implements WritableKvCapability, RemovableKv
 
   @override
   Future<void> remove(String key) {
-    _operations.add(KvBatchRemove(key));
+    _operations.add(KvRemoveOperation(key));
     return Future<void>.value();
   }
 }
 
+/// A restricted gateway scope that only permits write and remove operations.
+typedef KvBatchScope = KvGateway<KvOperationRecorder>;
+
 extension BatchableKvGatewayExtension<A extends BatchableKvCapability> on KvGateway<A> {
+  /// Executes a sequence of write and remove operations as a single batch.
   Future<void> batch(
-    FutureOr<void> Function(KvGateway<KvBatchCollectorAdapter> entry) build,
+    FutureOr<void> Function(KvBatchScope scope) build,
   ) async {
-    final collector = KvBatchCollectorAdapter();
-    await build(KvGateway<KvBatchCollectorAdapter>(collector));
-    return adapter.batch(collector.operations);
+    final recorder = KvOperationRecorder();
+    await build(KvBatchScope(recorder));
+    return adapter.batch(recorder.operations);
   }
 }

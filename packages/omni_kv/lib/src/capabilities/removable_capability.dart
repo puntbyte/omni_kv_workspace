@@ -1,4 +1,3 @@
-import '../core/kv_adapter.dart';
 import '../core/kv_capability.dart';
 import '../core/kv_entry.dart';
 import '../core/kv_gateway.dart';
@@ -10,7 +9,7 @@ abstract mixin class RemovableKvCapability implements KvCapability {
 }
 
 extension RemovableKvGatewayExtension<A extends RemovableKvCapability> on KvGateway<A> {
-  Future<void> remove<T>(KvKey<T> key) => adapter.remove(key.name);
+  Future<void> remove<T>(KvKey<T> key) => adapter.remove(key.id);
 }
 
 extension RemovableKvEntryExtension<T, A extends RemovableKvCapability> on KvEntry<T, A> {

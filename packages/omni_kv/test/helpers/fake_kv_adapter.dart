@@ -22,25 +22,25 @@ class FakeKvAdapter
   Future<void> write(String key, Object? value) async {
     final prev = store[key];
     store[key] = value;
-    controller.add(KvValueChanged(key: key, value: value, previousValue: prev));
+    controller.add(KvUpdateChange(key: key, value: value, previousValue: prev));
   }
 
   @override
   Future<void> remove(String key) async {
     final prev = store.remove(key);
-    controller.add(KvValueRemoved(key: key, previousValue: prev));
+    controller.add(KvRemoveChange(key: key, previousValue: prev));
   }
 
   @override
   Future<void> clear() async => store.clear();
 
   @override
-  Future<void> batch(List<KvBatchOperation> operations) async {
+  Future<void> batch(List<KvOperation> operations) async {
     for (final operation in operations) {
       switch (operation) {
-        case KvBatchWrite(:final key, :final value):
+        case KvWriteOperation(:final key, :final value):
           await write(key, value);
-        case KvBatchRemove(:final key):
+        case KvRemoveOperation(:final key):
           await remove(key);
       }
     }

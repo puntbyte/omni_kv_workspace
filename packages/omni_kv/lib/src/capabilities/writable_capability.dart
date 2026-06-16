@@ -11,7 +11,7 @@ abstract mixin class WritableKvCapability implements KvCapability {
 
 extension WritableKvGatewayExtension<A extends WritableKvCapability> on KvGateway<A> {
   Future<void> write<T>(KvKey<T> key, T value) {
-    return adapter.write(key.name, key.encode(value));
+    return adapter.write(key.id, key.encode(value));
   }
 
   Future<void> set<T>(KvKey<T> key, T value) => write(key, value);
