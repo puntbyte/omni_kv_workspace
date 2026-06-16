@@ -11,7 +11,7 @@ final class ConsoleOutput {
   void step(String value) => stdout.writeln('• $value');
 
   Future<void> value(String label, FutureOr<Object?> value) async =>
-      stdout.writeln('$label: ${await value}');
+      stdout.writeln('  ↳ $label: ${await value}');
 
-  void done(String value) => stdout.writeln('✓ $value');
+  void done(String value) => stdout.writeln('\n✓ $value\n');
 }

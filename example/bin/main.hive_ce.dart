@@ -1,34 +1,38 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:hive_ce/hive.dart';
 import 'package:omni_kv/omni_kv.dart';
-import 'package:omni_kv_example/keys/app_keys.dart';
+import 'package:omni_kv_example/keys/auth_keys.dart';
 import 'package:omni_kv_hive_ce/omni_kv_hive_ce.dart';
-
 import 'shared/console_output.dart';
 
 Future<void> main() async {
-  final output = const ConsoleOutput()..title('HiveCeKvAdapter');
+  final output = const ConsoleOutput()..title('Hive CE + Encrypted Codec Demo');
 
-  final directory = await Directory.systemTemp.createTemp('poly_kv_hive_ce_');
-  Hive.init(directory.path);
+  final dir = await Directory.systemTemp.createTemp('omni_kv_hive_');
+  Hive.init(dir.path);
+  final box = await Hive.openBox<Object?>('secure_box');
 
-  final box = await Hive.openBox<Object?>('example');
-  final kv = KvGateway(HiveCeKvAdapter(box, codec: const HiveCeKvCodec(prefix: 'example.')));
+  final kv = KvGateway(
+    LoggingKvAdapter(
+      HiveCeKvAdapter(
+        box,
+        codec: EncryptedKvCodec(
+          delegate: const HiveCeKvCodec(prefix: 'secure_app.'),
+          onEncrypt: (payload) => base64Encode(utf8.encode('AES:$payload')),
+          onDecrypt: (payload) => utf8.decode(base64Decode(payload)).replaceAll('AES:', ''),
+        ),
+      ),
+      logger: output.step,
+    ),
+  );
 
-  await kv.app(.theme).write(AppTheme.dark);
-  await kv.app(.launchCount).write(1);
+  await kv.auth(.token).write('super_secret_token');
 
-  await kv.batch((entry) async {
-    await entry.app(.theme).write(AppTheme.light);
-    await entry.app(.launchCount).write(2);
-  });
-
-  await output.value('Theme', kv.app(.theme).read());
-  await output.value('Launch count', kv.app(.launchCount).read());
+  output.step('Raw physical database data: ${box.get('secure_app.auth.token')}');
+  await output.value('Decrypted token via OmniKV', kv.auth(.token).read());
 
   await box.close();
-  await directory.delete(recursive: true);
-
-  output.done('Hive CE demo complete');
+  await dir.delete(recursive: true);
+  output.done('Hive CE Demo Complete');
 }

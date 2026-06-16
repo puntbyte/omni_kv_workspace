@@ -1,43 +1,30 @@
 import 'package:omni_kv/omni_kv.dart';
 import 'package:omni_kv_example/keys/app_keys.dart';
-import 'package:omni_kv_example/keys/auth_keys.dart';
-
+import 'package:omni_kv_example/models/app_theme.dart';
 import 'shared/console_output.dart';
 
 Future<void> main() async {
-  final output = const ConsoleOutput()..title('MemoryKvAdapter');
+  final output = const ConsoleOutput()..title('Memory + Logging + Namespace Streaming Demo');
 
-  final kv = KvGateway(MemoryKvAdapter(codec: const MemoryKvCodec(prefix: 'example.')));
-  final subscription = kv.app(.theme).watch().listen((change) {
-    output.step('Theme changed: ${change.previousValue} -> ${change.value}');
+  final kv = KvGateway(
+    LoggingKvAdapter(
+      MemoryKvAdapter(codec: const MemoryKvCodec(prefix: 'demo.')),
+      logger: output.step,
+    ),
+  );
+
+  final sub = kv.watchNamespace('app').listen((change) {
+    output.step('🚨 [STREAM] Namespace "app" key changed: ${change.key}');
   });
 
-  await kv.app(.theme).write(.dark);
-  await kv.app(.launchCount).write(1);
-  await kv.auth(.userProfile).write({'id': 1, 'role': 'admin'});
+  await output.value('Dynamic Default Session', kv.app(.sessionStartedAt).read());
 
-  await output.value('Theme', kv.app(.theme).read());
-  await output.value('Launch count', kv.app(.launchCount).read());
-  await output.value('Profile', kv.auth(.userProfile).read());
-
-  await kv.batch((entry) async {
-    await entry.app(.theme).write(.light);
-    await entry.app(.launchCount).write(2);
-    await entry.auth(.token).write('memory-token');
-    await entry.auth(.token).remove();
+  await kv.batch((scope) async {
+    await scope.app(.theme).write(AppTheme.dark);
+    await scope.app(.volume).write(0.5);
   });
 
-  await output.value('Theme after batch', kv.app(.theme).read());
-  await output.value('Token after batch', kv.auth(.token).read());
-
-  await kv.batch((entry) async {
-    await entry.app(.theme).write(.dark);
-    await entry.app(.launchCount).write(3);
-  });
-
-  await output.value('Theme after app batch', kv.app(.theme).read());
-  await output.value('Launch count after app batch', kv.app(.launchCount).read());
-
-  await subscription.cancel();
-  output.done('Memory demo complete');
+  await Future<void>.delayed(const Duration(milliseconds: 100)); // Let stream print
+  await sub.cancel();
+  output.done('Memory Demo Complete');
 }

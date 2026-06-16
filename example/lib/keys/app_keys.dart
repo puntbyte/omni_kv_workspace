@@ -1,36 +1,33 @@
 import 'package:omni_kv/omni_kv.dart';
-
-enum AppTheme { system, light, dark }
+import '../models/app_theme.dart';
 
 final class AppKey<T> extends KvKey<T> {
   const AppKey(super.id, {required super.defaultValue, super.converter}) : super(namespace: 'app');
 
-  const AppKey.required(super.id, {super.converter}) : super.required(namespace: 'app');
+  const AppKey.builder(super.id, {required super.defaultBuilder, super.converter})
+    : super.builder(namespace: 'app');
 
   static const theme = AppKey<AppTheme>(
-    'app.theme',
+    'theme',
     defaultValue: AppTheme.system,
     converter: EnumKvConverter.toName(AppTheme.values),
   );
 
-  static const launchCount = AppKey<int>('launch_count', defaultValue: 0);
+  static const volume = AppKey<double>('volume', defaultValue: 1);
 
-  static const userName = AppKey<String?>('user_name', defaultValue: null);
-
-  static const lastOpenedAt = AppKey<DateTime?>(
-    'last_opened_at',
-    defaultValue: null,
-    converter: DateTimeKvConverter.toIsoString(),
+  static const autoLock = AppKey<Duration>(
+    'auto_lock',
+    defaultValue: Duration(minutes: 5),
+    converter: DurationKvConverter.toMilliseconds(),
   );
 
-  static const profile = AppKey<Map<String, Object?>?>(
-    'profile',
-    defaultValue: null,
-    converter: JsonKvConverter.toObject(),
+  static const sessionStartedAt = AppKey<DateTime>.builder(
+    'session_started_at',
+    defaultBuilder: DateTime.now,
+    converter: DateTimeKvConverter.toIsoString(),
   );
 }
 
-// Replaces the 4 big scope objects with a single clean method extension!
 extension AppKvGatewayNamespace<A extends KvCapability> on KvGateway<A> {
   KvEntry<T, A> app<T>(AppKey<T> key) => entry(key);
 }
