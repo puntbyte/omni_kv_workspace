@@ -198,10 +198,10 @@ OmniKV supports asynchronous, ordered execution of multiple operations. Adapters
 transactional batching will optimize this under the hood.
 
 ```dart
-await kv.batch((tx) async {
-  await tx.app(.launchCount).write(3);
-  await tx.app(.userName).write('Alice');
-  await tx.app(.token).remove();
+await kv.batch((scope) async {
+  await scope.app(.launchCount).write(3);
+  await scope.app(.userName).write('Alice');
+  await scope.app(.token).remove();
 });
 ```
 ---
