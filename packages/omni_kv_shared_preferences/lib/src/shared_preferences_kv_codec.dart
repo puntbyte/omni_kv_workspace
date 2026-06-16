@@ -1,7 +1,7 @@
 import 'package:omni_kv/omni_kv.dart';
 
 /// Key/value codec used by `SharedPreferencesKvAdapter`.
-final class SharedPreferencesKvCodec implements KvStorageCodec {
+final class SharedPreferencesKvCodec implements KvCodec {
   const SharedPreferencesKvCodec({this.prefix});
 
   final String? prefix;
@@ -47,7 +47,7 @@ final class SharedPreferencesKvCodec implements KvStorageCodec {
       double() => value,
       bool() => value,
       List<String>() => value,
-      _ => throw KvUnsupportedValueException(
+      _ => throw UnsupportedValueKvException(
         'SharedPreferencesKvAdapter natively supports String, int, double, '
         'bool, and List<String>. To store a ${value.runtimeType}, use a '
         'converter on your KvKey.',

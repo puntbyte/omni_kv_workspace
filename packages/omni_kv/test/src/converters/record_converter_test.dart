@@ -6,7 +6,7 @@ typedef Coords = ({double lat, double lng});
 void main() {
   group('RecordConverter', () {
     test('toJsonString handles Dart 3 Records', () {
-      final converter = RecordConverter<Coords>.toJsonString(
+      final converter = RecordKvConverter<Coords>.toJsonString(
         toMap: (r) => {'lat': r.lat, 'lng': r.lng},
         fromMap: (json) => (lat: json['lat'] as double, lng: json['lng'] as double),
       );

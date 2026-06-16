@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('KvException', () {
     test('KvMissingValueException formats correctly', () {
-      const ex = KvMissingValueException('auth_token');
+      const ex = MissingValueKvException('auth_token');
       expect(
         ex.toString(),
         'KvMissingValueException: No value found for key "auth_token".',
@@ -13,7 +13,7 @@ void main() {
 
     test('preserves cause without owning stack trace state', () {
       final cause = StateError('bad value');
-      final ex = KvTypeException(
+      final ex = TypeKvException(
         'Failed to decode.',
         cause: cause,
       );

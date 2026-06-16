@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import '../capabilities/batchable.dart';
-import '../capabilities/clearable.dart';
-import '../capabilities/readable.dart';
-import '../capabilities/removable.dart';
-import '../capabilities/watchable.dart';
-import '../capabilities/writable.dart';
+import '../capabilities/batchable_capability.dart';
+import '../capabilities/clearable_capability.dart';
+import '../capabilities/readable_capability.dart';
+import '../capabilities/removable_capability.dart';
+import '../capabilities/watchable_capability.dart';
+import '../capabilities/writable_capability.dart';
 import '../core/kv_adapter.dart';
 import '../models/kv_change.dart';
 import 'memory_kv_codec.dart';

@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('BigIntConverter', () {
     test('toString encodes and decodes BigInt correctly', () {
-      const converter = BigIntConverter.toString();
+      const converter = BigIntKvConverter.toString();
       final bigValue = BigInt.parse('9007199254740991000000000');
 
       final encoded = converter.encode(bigValue);

@@ -6,7 +6,7 @@ extension type UserId(int value) {}
 void main() {
   group('InlineConverter', () {
     test('encodes and decodes custom types', () {
-      final converter = InlineConverter<UserId, int>(
+      final converter = InlineKvConverter<UserId, int>(
         onEncode: (id) => id.value,
         onDecode: (val) => UserId(val! as int),
       );

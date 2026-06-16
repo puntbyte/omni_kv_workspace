@@ -1,10 +1,10 @@
 import '../core/kv_converter.dart';
 
-sealed class UriConverter implements KvConverter<Uri?, Object?> {
-  const factory UriConverter.toString() = _UriStringConverter;
+sealed class UriKvConverter implements KvConverter<Uri?, Object?> {
+  const factory UriKvConverter.toString() = _UriStringConverter;
 }
 
-final class _UriStringConverter implements UriConverter {
+final class _UriStringConverter implements UriKvConverter {
   const _UriStringConverter();
 
   @override

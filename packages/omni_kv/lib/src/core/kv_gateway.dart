@@ -1,4 +1,4 @@
-import 'kv_adapter.dart';
+import 'kv_capability.dart';
 import 'kv_entry.dart';
 import 'kv_key.dart';
 

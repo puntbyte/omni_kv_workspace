@@ -18,39 +18,39 @@ sealed class KvException implements Exception {
   }
 }
 
-final class KvMissingValueException extends KvException {
-  const KvMissingValueException(String key) : super('No value found for key "$key".');
+final class MissingValueKvException extends KvException {
+  const MissingValueKvException(String key) : super('No value found for key "$key".');
 
   @override
-  String get name => 'KvMissingValueException';
+  String get name => 'MissingValueKvException';
 }
 
-final class KvTypeException extends KvException {
-  const KvTypeException(
+final class TypeKvException extends KvException {
+  const TypeKvException(
     super.message, {
     super.cause,
   });
 
   @override
-  String get name => 'KvTypeException';
+  String get name => 'TypeKvException';
 }
 
-final class KvSerializationException extends KvException {
-  const KvSerializationException(
+final class SerializationKvException extends KvException {
+  const SerializationKvException(
     super.message, {
     super.cause,
   });
 
   @override
-  String get name => 'KvSerializationException';
+  String get name => 'SerializationKvException';
 }
 
-final class KvUnsupportedValueException extends KvException {
-  const KvUnsupportedValueException(
+final class UnsupportedValueKvException extends KvException {
+  const UnsupportedValueKvException(
     super.message, {
     super.cause,
   });
 
   @override
-  String get name => 'KvUnsupportedValueException';
+  String get name => 'UnsupportedValueKvException';
 }

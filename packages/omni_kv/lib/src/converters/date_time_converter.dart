@@ -1,12 +1,12 @@
 import '../core/kv_converter.dart';
 
-sealed class DateTimeConverter implements KvConverter<DateTime?, Object?> {
-  const factory DateTimeConverter.toIsoString() = _DateTimeIsoStringConverter;
+sealed class DateTimeKvConverter implements KvConverter<DateTime?, Object?> {
+  const factory DateTimeKvConverter.toIsoString() = _DateTimeIsoStringConverter;
 
-  const factory DateTimeConverter.toMilliseconds() = _DateTimeMillisecondsConverter;
+  const factory DateTimeKvConverter.toMilliseconds() = _DateTimeMillisecondsKvConverter;
 }
 
-final class _DateTimeIsoStringConverter implements DateTimeConverter {
+final class _DateTimeIsoStringConverter implements DateTimeKvConverter {
   const _DateTimeIsoStringConverter();
 
   @override
@@ -21,8 +21,8 @@ final class _DateTimeIsoStringConverter implements DateTimeConverter {
   };
 }
 
-final class _DateTimeMillisecondsConverter implements DateTimeConverter {
-  const _DateTimeMillisecondsConverter();
+final class _DateTimeMillisecondsKvConverter implements DateTimeKvConverter {
+  const _DateTimeMillisecondsKvConverter();
 
   @override
   int? encode(DateTime? value) => value?.millisecondsSinceEpoch;

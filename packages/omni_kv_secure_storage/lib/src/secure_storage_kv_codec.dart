@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:omni_kv/omni_kv.dart';
 
 /// Key/value codec used by `SecureStorageKvAdapter`.
-final class SecureStorageKvCodec implements KvStorageCodec {
+final class SecureStorageKvCodec implements KvCodec {
   const SecureStorageKvCodec({this.prefix});
 
   final String? prefix;

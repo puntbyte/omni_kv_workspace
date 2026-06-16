@@ -53,7 +53,7 @@ final class SharedPreferencesKvAdapter
       case final List<String> strings:
         await preferences.setStringList(storageKey, strings);
       case _:
-        throw KvUnsupportedValueException(
+        throw UnsupportedValueKvException(
           'Unsupported encoded SharedPreferences value: ${encoded.runtimeType}.',
         );
     }

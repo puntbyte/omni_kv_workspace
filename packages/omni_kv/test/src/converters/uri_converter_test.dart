@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('UriConverter', () {
     test('toString encodes and decodes Uri correctly', () {
-      const converter = UriConverter.toString();
+      const converter = UriKvConverter.toString();
       final uri = Uri.parse('https://example.com/api?user=1');
 
       final encoded = converter.encode(uri);

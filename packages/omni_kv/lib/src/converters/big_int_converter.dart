@@ -1,11 +1,7 @@
 import '../core/kv_converter.dart';
 
-sealed class BigIntConverter implements KvConverter<BigInt?, Object?> {
-  const factory BigIntConverter.toString() = _BigIntStringConverter;
-}
-
-final class _BigIntStringConverter implements BigIntConverter {
-  const _BigIntStringConverter();
+final class BigIntKvConverter implements KvConverter<BigInt?, Object?> {
+  const BigIntKvConverter.toString();
 
   @override
   String? encode(BigInt? value) => value?.toString();

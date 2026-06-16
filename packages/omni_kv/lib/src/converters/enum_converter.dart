@@ -1,13 +1,13 @@
 import '../core/kv_converter.dart';
 
-sealed class EnumConverter<TEnum extends Enum> implements KvConverter<TEnum?, Object?> {
-  const factory EnumConverter.toName(List<TEnum> values) = _EnumNameConverter<TEnum>;
+sealed class EnumKvConverter<TEnum extends Enum> implements KvConverter<TEnum?, Object?> {
+  const factory EnumKvConverter.toName(List<TEnum> values) = _EnumNameKvConverter<TEnum>;
 
-  const factory EnumConverter.toIndex(List<TEnum> values) = _EnumIndexConverter<TEnum>;
+  const factory EnumKvConverter.toIndex(List<TEnum> values) = _EnumIndexKvConverter<TEnum>;
 }
 
-final class _EnumNameConverter<TEnum extends Enum> implements EnumConverter<TEnum> {
-  const _EnumNameConverter(this.values);
+final class _EnumNameKvConverter<TEnum extends Enum> implements EnumKvConverter<TEnum> {
+  const _EnumNameKvConverter(this.values);
 
   final List<TEnum> values;
 
@@ -22,8 +22,8 @@ final class _EnumNameConverter<TEnum extends Enum> implements EnumConverter<TEnu
   }
 }
 
-final class _EnumIndexConverter<TEnum extends Enum> implements EnumConverter<TEnum> {
-  const _EnumIndexConverter(this.values);
+final class _EnumIndexKvConverter<TEnum extends Enum> implements EnumKvConverter<TEnum> {
+  const _EnumIndexKvConverter(this.values);
 
   final List<TEnum> values;
 

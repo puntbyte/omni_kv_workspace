@@ -35,7 +35,7 @@ void main() {
     test('throws KvUnsupportedValueException for complex types without converters', () async {
       expect(
         () => gateway.test(.mapVal).write({'key': 'value'}),
-        throwsA(isA<KvUnsupportedValueException>()),
+        throwsA(isA<UnsupportedValueKvException>()),
       );
     });
 

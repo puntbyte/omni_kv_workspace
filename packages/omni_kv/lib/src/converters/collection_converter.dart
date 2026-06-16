@@ -1,8 +1,8 @@
 import '../core/kv_converter.dart';
 
 /// Converts a List of items, applying the [elementConverter] to each item.
-final class ListConverter<T, S> implements KvConverter<List<T>?, Object?> {
-  const ListConverter(this.elementConverter);
+final class ListKvConverter<T, S> implements KvConverter<List<T>?, Object?> {
+  const ListKvConverter(this.elementConverter);
 
   final KvConverter<T?, Object?> elementConverter;
 
@@ -21,8 +21,8 @@ final class ListConverter<T, S> implements KvConverter<List<T>?, Object?> {
 }
 
 /// Converts a Set of items, safely storing them as a List in the database.
-final class SetConverter<T, S> implements KvConverter<Set<T>?, Object?> {
-  const SetConverter(this.elementConverter);
+final class SetKvConverter<T, S> implements KvConverter<Set<T>?, Object?> {
+  const SetKvConverter(this.elementConverter);
 
   final KvConverter<T?, Object?> elementConverter;
 

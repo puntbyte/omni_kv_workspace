@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('DurationConverter', () {
     test('toMilliseconds encodes and decodes Duration correctly', () {
-      const converter = DurationConverter.toMilliseconds();
+      const converter = DurationKvConverter.toMilliseconds();
       const duration = Duration(hours: 2, minutes: 30);
 
       final encoded = converter.encode(duration);

@@ -3,23 +3,23 @@ import 'dart:convert';
 import '../core/kv_converter.dart';
 
 /// Converts a custom Dart class to and from a storable format.
-sealed class ModelConverter<T> implements KvConverter<T?, Object?> {
+sealed class ModelKvConverter<T> implements KvConverter<T?, Object?> {
   /// Stores the class as a JSON encoded String.
   /// (Highly recommended for SharedPreferences and SecureStorage).
-  const factory ModelConverter.toJsonString({
+  const factory ModelKvConverter.toJsonString({
     required Map<String, dynamic> Function(T model) toMap,
     required T Function(Map<String, dynamic> json) fromMap,
   }) = _ModelJsonStringConverter<T>;
 
   /// Stores the class as a raw Map.
   /// (Ideal for Hive and Memory adapters).
-  const factory ModelConverter.toMap({
+  const factory ModelKvConverter.toMap({
     required Map<String, dynamic> Function(T model) toMap,
     required T Function(Map<String, dynamic> map) fromMap,
   }) = _ModelMapConverter<T>;
 }
 
-final class _ModelJsonStringConverter<T> implements ModelConverter<T> {
+final class _ModelJsonStringConverter<T> implements ModelKvConverter<T> {
   const _ModelJsonStringConverter({
     required Map<String, dynamic> Function(T model) toMap,
     required T Function(Map<String, dynamic> json) fromMap,
@@ -42,7 +42,7 @@ final class _ModelJsonStringConverter<T> implements ModelConverter<T> {
   }
 }
 
-final class _ModelMapConverter<T> implements ModelConverter<T> {
+final class _ModelMapConverter<T> implements ModelKvConverter<T> {
   const _ModelMapConverter({
     required Map<String, dynamic> Function(T model) toMap,
     required T Function(Map<String, dynamic> map) fromMap,

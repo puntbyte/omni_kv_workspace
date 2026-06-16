@@ -6,13 +6,13 @@ enum Status { pending, active }
 void main() {
   group('EnumConverter', () {
     test('toName', () {
-      const converter = EnumConverter.toName(Status.values);
+      const converter = EnumKvConverter.toName(Status.values);
       expect(converter.encode(Status.active), 'active');
       expect(converter.decode('pending'), Status.pending);
     });
 
     test('toIndex', () {
-      const converter = EnumConverter.toIndex(Status.values);
+      const converter = EnumKvConverter.toIndex(Status.values);
       expect(converter.encode(Status.active), 1);
       expect(converter.decode(0), Status.pending);
     });

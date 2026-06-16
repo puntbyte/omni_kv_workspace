@@ -3,23 +3,23 @@ import 'dart:convert';
 import '../core/kv_converter.dart';
 
 /// Converts a Dart 3 Record to and from a storable format.
-sealed class RecordConverter<T extends Record> implements KvConverter<T?, Object?> {
+sealed class RecordKvConverter<T extends Record> implements KvConverter<T?, Object?> {
   /// Stores the record as a JSON encoded String.
   /// (Highly recommended for SharedPreferences and SecureStorage).
-  const factory RecordConverter.toJsonString({
+  const factory RecordKvConverter.toJsonString({
     required Map<String, dynamic> Function(T record) toMap,
     required T Function(Map<String, dynamic> json) fromMap,
   }) = _RecordJsonStringConverter<T>;
 
   /// Stores the record as a raw Map.
   /// (Ideal for Hive and Memory adapters).
-  const factory RecordConverter.toMap({
+  const factory RecordKvConverter.toMap({
     required Map<String, dynamic> Function(T record) toMap,
     required T Function(Map<String, dynamic> map) fromMap,
   }) = _RecordMapConverter<T>;
 }
 
-final class _RecordJsonStringConverter<T extends Record> implements RecordConverter<T> {
+final class _RecordJsonStringConverter<T extends Record> implements RecordKvConverter<T> {
   const _RecordJsonStringConverter({
     required Map<String, dynamic> Function(T record) toMap,
     required T Function(Map<String, dynamic> json) fromMap,
@@ -42,7 +42,7 @@ final class _RecordJsonStringConverter<T extends Record> implements RecordConver
   }
 }
 
-final class _RecordMapConverter<T extends Record> implements RecordConverter<T> {
+final class _RecordMapConverter<T extends Record> implements RecordKvConverter<T> {
   const _RecordMapConverter({
     required Map<String, dynamic> Function(T record) toMap,
     required T Function(Map<String, dynamic> map) fromMap,

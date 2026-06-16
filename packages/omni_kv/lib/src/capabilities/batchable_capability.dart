@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import '../core/kv_adapter.dart';
+import '../core/kv_capability.dart';
 import '../core/kv_gateway.dart';
 import '../models/kv_batch.dart';
-import 'removable.dart';
-import 'writable.dart';
+import 'removable_capability.dart';
+import 'writable_capability.dart';
 
 /// Capability for grouped ordered writes/removes.
 ///

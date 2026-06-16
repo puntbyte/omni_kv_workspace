@@ -17,7 +17,7 @@ class Settings {
 void main() {
   group('ModelConverter', () {
     test('toJsonString encodes/decodes custom classes securely for SharedPreferences', () {
-      final converter = ModelConverter<Settings>.toJsonString(
+      final converter = ModelKvConverter<Settings>.toJsonString(
         toMap: (m) => m.toMap(),
         fromMap: Settings.fromMap,
       );
@@ -31,7 +31,7 @@ void main() {
     });
 
     test('toMap encodes/decodes custom classes natively for Hive/Memory', () {
-      final converter = ModelConverter<Settings>.toMap(
+      final converter = ModelKvConverter<Settings>.toMap(
         toMap: (m) => m.toMap(),
         fromMap: Settings.fromMap,
       );

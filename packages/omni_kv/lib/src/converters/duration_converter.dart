@@ -1,11 +1,7 @@
 import '../core/kv_converter.dart';
 
-sealed class DurationConverter implements KvConverter<Duration?, Object?> {
-  const factory DurationConverter.toMilliseconds() = _DurationMillisecondsConverter;
-}
-
-final class _DurationMillisecondsConverter implements DurationConverter {
-  const _DurationMillisecondsConverter();
+final class DurationKvConverter implements KvConverter<Duration?, Object?> {
+  const DurationKvConverter.toMilliseconds();
 
   @override
   int? encode(Duration? value) => value?.inMilliseconds;

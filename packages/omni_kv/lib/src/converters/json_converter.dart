@@ -1,10 +1,10 @@
 import 'dart:convert';
 import '../core/kv_converter.dart';
 
-final class JsonConverter<T> implements KvConverter<T?, Object?> {
-  const JsonConverter.toObject() : _kind = _JsonKind.object;
+final class JsonKvConverter<T> implements KvConverter<T?, Object?> {
+  const JsonKvConverter.toObject() : _kind = _JsonKind.object;
 
-  const JsonConverter.toList() : _kind = _JsonKind.list;
+  const JsonKvConverter.toList() : _kind = _JsonKind.list;
 
   final _JsonKind _kind;
 

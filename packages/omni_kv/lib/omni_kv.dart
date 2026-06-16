@@ -1,10 +1,10 @@
 // ---- Capabilities -------------------------------------------------------------------------------
-export 'src/capabilities/batchable.dart';
-export 'src/capabilities/clearable.dart';
-export 'src/capabilities/readable.dart';
-export 'src/capabilities/removable.dart';
-export 'src/capabilities/watchable.dart';
-export 'src/capabilities/writable.dart';
+export 'src/capabilities/batchable_capability.dart';
+export 'src/capabilities/clearable_capability.dart';
+export 'src/capabilities/readable_capability.dart';
+export 'src/capabilities/removable_capability.dart';
+export 'src/capabilities/watchable_capability.dart';
+export 'src/capabilities/writable_capability.dart';
 
 // ---- Converters ---------------------------------------------------------------------------------
 export 'src/converters/big_int_converter.dart';
@@ -20,6 +20,7 @@ export 'src/converters/uri_converter.dart';
 
 // ---- Core ---------------------------------------------------------------------------------------
 export 'src/core/kv_adapter.dart';
+export 'src/core/kv_capability.dart';
 export 'src/core/kv_converter.dart';
 export 'src/core/kv_entry.dart';
 export 'src/core/kv_gateway.dart';

@@ -12,7 +12,7 @@ void main() {
       const key = KvKey<String>.required('token');
       expect(
         () => key.decode(null, isPresent: false),
-        throwsA(isA<KvMissingValueException>()),
+        throwsA(isA<MissingValueKvException>()),
       );
     });
 

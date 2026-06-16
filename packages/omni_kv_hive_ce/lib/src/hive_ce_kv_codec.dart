@@ -4,7 +4,7 @@ import 'package:omni_kv/omni_kv.dart';
 ///
 /// Hive CE can store primitive values directly. This codec mainly owns
 /// prefixing and logical/storage key translation so adapter logic stays small.
-final class HiveCeKvCodec implements KvStorageCodec {
+final class HiveCeKvCodec implements KvCodec {
   const HiveCeKvCodec({this.prefix});
 
   final String? prefix;

@@ -10,7 +10,7 @@ final class AppKey<T> extends KvKey<T> {
   static const theme = AppKey<AppTheme>(
     'app.theme',
     defaultValue: AppTheme.system,
-    converter: EnumConverter.toName(AppTheme.values),
+    converter: EnumKvConverter.toName(AppTheme.values),
   );
 
   static const launchCount = AppKey<int>('app.launch_count', defaultValue: 0);
@@ -20,13 +20,13 @@ final class AppKey<T> extends KvKey<T> {
   static const lastOpenedAt = AppKey<DateTime?>(
     'app.last_opened_at',
     defaultValue: null,
-    converter: DateTimeConverter.toIsoString(),
+    converter: DateTimeKvConverter.toIsoString(),
   );
 
   static const profile = AppKey<Map<String, Object?>?>(
     'app.profile',
     defaultValue: null,
-    converter: JsonConverter.toObject(),
+    converter: JsonKvConverter.toObject(),
   );
 }
 

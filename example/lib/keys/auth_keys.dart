@@ -10,7 +10,7 @@ final class AuthKey<T> extends KvKey<T> {
   static const userProfile = AuthKey<Map<String, Object?>?>(
     'auth.user_profile',
     defaultValue: null,
-    converter: JsonConverter.toObject(),
+    converter: JsonKvConverter.toObject(),
   );
 }
 

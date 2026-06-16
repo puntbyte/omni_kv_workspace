@@ -3,8 +3,8 @@
 /// Adapter packages implement this contract with backend-specific codecs. The
 /// core package owns the shape so adapter behavior stays consistent while
 /// concrete codecs remain close to their storage backend.
-abstract interface class KvStorageCodec {
-  const KvStorageCodec();
+abstract interface class KvCodec {
+  const KvCodec();
 
   /// Converts a PolyKV logical key into the key used by the storage backend.
   String storageKey(String logicalKey);

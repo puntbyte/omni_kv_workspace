@@ -21,7 +21,7 @@ class KvKey<T> {
     this.converter,
   }) : hasDefaultValue = true;
 
-  /// Creates a key that throws [KvMissingValueException] when no value exists.
+  /// Creates a key that throws [MissingValueKvException] when no value exists.
   const KvKey.required(
     this.name, {
     this.converter,
@@ -42,7 +42,7 @@ class KvKey<T> {
   T decode(Object? value, {required bool isPresent}) {
     if (!isPresent) {
       if (hasDefaultValue) return defaultValue as T;
-      throw KvMissingValueException(name);
+      throw MissingValueKvException(name);
     }
 
     if (value == null) return null as T;
@@ -52,7 +52,7 @@ class KvKey<T> {
       return converter == null ? value as T : converter.decode(value) as T;
     } on Object catch (error, stackTrace) {
       Error.throwWithStackTrace(
-        KvTypeException(
+        TypeKvException(
           'Failed to decode key "$name" as $T.',
           cause: error,
         ),
