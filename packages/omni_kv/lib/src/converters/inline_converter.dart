@@ -2,18 +2,18 @@ import '../core/kv_converter.dart';
 
 /// A highly flexible converter that takes inline encode and decode callbacks.
 /// This is the recommended way to store Dart 3 Records or custom classes.
-final class InlineKvConverter<T, S> implements KvConverter<T?, Object?> {
+final class InlineKvConverter<T, S> implements KvConverter<T?, S?> {
   const InlineKvConverter({
     required this.onEncode,
     required this.onDecode,
   });
 
   final S Function(T value) onEncode;
-  final T Function(Object? value) onDecode;
+  final T Function(S? value) onDecode;
 
   @override
-  Object? encode(T? value) => value == null ? null : onEncode(value);
+  S? encode(T? value) => value == null ? null : onEncode(value);
 
   @override
-  T? decode(Object? value) => value == null ? null : onDecode(value);
+  T? decode(S? value) => value == null ? null : onDecode(value);
 }

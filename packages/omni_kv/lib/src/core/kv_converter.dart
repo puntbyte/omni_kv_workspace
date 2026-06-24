@@ -8,5 +8,5 @@ import 'kv_key.dart';
 abstract interface class KvConverter<T, S> {
   S encode(T value);
 
-  T decode(Object? value);
+  T decode(S? value);
 }

@@ -1,3 +1,20 @@
+## [0.2.0]
+
+### Changed
+
+- **KvConverter API tightening:** `KvConverter.decode` now accepts `S?` instead of `Object?`, making
+  decoder contracts fully type-safe and aligned with the adapter storage type.
+- **InlineKvConverter typing updated:** `InlineKvConverter` now implements `KvConverter<T?, S?>`,
+  with `onDecode` updated from `Object?` to `S?` and `encode`/`decode` returning typed nullable
+  storage values.
+- **Improved type safety:** Removed the need for converter implementations to handle untyped
+  storage input, reducing casts and runtime type errors.
+
+### Notes
+
+- Existing built-in and custom converters should be updated to match the new `S?` decode contract.
+- This change keeps nullable support intact for both `KvKey<T>` and `KvKey<T?>`.
+
 ## [0.1.0]
 
 ### Added
