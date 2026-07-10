@@ -1,15 +1,20 @@
-import 'kv_capability.dart';
+import 'kv_adapter.dart';
 import 'kv_entry.dart';
 import 'kv_key.dart';
 
-final class KvGateway<A extends KvCapability> {
+/// Typed facade over a concrete OmniKV adapter.
+///
+/// The gateway intentionally exposes only [TAdapter]. The adapter itself carries
+/// its capability profile, so public usage stays ergonomic while extension
+/// methods remain compile-time gated by adapter contracts.
+final class KvGateway<TAdapter extends KvAdapter<dynamic>> {
   const KvGateway(this.adapter);
 
-  final A adapter;
+  final TAdapter adapter;
 
-  /// Fluent entry point utilizing Dart 3.10 call shorthand `prefs(.theme)`.
-  KvEntry<T, A> call<T>(KvKey<T> key) => entry(key);
+  /// Fluent entry point, for example `kv(.theme)`.
+  KvEntry<T, TAdapter> call<T>(KvKey<T> key) => entry(key);
 
-  /// Standard entry point `prefs.entry(AppKey.theme)`.
-  KvEntry<T, A> entry<T>(KvKey<T> key) => KvEntry<T, A>(this, key);
+  /// Standard entry point, for example `kv.entry(AppKeys.theme)`.
+  KvEntry<T, TAdapter> entry<T>(KvKey<T> key) => KvEntry<T, TAdapter>(this, key);
 }

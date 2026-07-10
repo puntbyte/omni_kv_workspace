@@ -1,13 +1,11 @@
-import '../../omni_kv.dart' show KvGateway;
 import 'kv_capability.dart';
-import 'kv_gateway.dart' show KvGateway;
 import 'kv_codec.dart';
 
 /// Base interface for real storage adapters.
 ///
-/// Capabilities describe behavior. An adapter describes a concrete storage
-/// backend and owns the codec used to translate logical PolyKV keys/values to
-/// backend storage keys/values.
-abstract interface class KvAdapter implements KvCapability {
+/// [TCapability] describes the adapter's compile-time feature set. The adapter
+/// owns the codec used to translate logical OmniKV keys and values to backend
+/// storage keys and values.
+abstract interface class KvAdapter<TCapability extends KvCapability> {
   KvCodec get codec;
 }

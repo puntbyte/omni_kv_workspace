@@ -1,4 +1,4 @@
-/// Converts logical PolyKV keys and values to backend-specific storage keys and values.
+/// Converts logical OmniKV keys and values to backend-specific storage keys and values.
 ///
 /// Adapter packages implement this contract with backend-specific codecs. The
 /// core package owns the shape so adapter behavior stays consistent while
@@ -6,10 +6,16 @@
 abstract interface class KvCodec {
   const KvCodec();
 
-  /// Converts a PolyKV logical key into the key used by the storage backend.
+  /// Whether this codec is scoped to a specific prefix/keyspace.
+  ///
+  /// Scoped codecs make destructive operations like clear safer because adapters
+  /// can remove only keys owned by this package/application scope.
+  bool get isScoped;
+
+  /// Converts a OmniKV logical key into the key used by the storage backend.
   String storageKey(String logicalKey);
 
-  /// Converts a backend key back into a PolyKV logical key.
+  /// Converts a backend key back into a OmniKV logical key.
   String logicalKey(Object? storageKey);
 
   /// Returns whether this codec owns [storageKey].
@@ -18,9 +24,9 @@ abstract interface class KvCodec {
   /// keys outside their prefix/scope.
   bool ownsKey(Object? storageKey);
 
-  /// Converts a PolyKV value into a backend-compatible value.
+  /// Converts a OmniKV value into a backend-compatible value.
   Object? encode(Object? value);
 
-  /// Converts a backend value into a PolyKV value.
+  /// Converts a backend value into a OmniKV value.
   Object? decode(Object? value);
 }

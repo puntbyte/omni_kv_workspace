@@ -1,7 +1,7 @@
 import '../capabilities/batchable_capability.dart';
 
 /// A low-level storage command collected by the batch DSL and consumed by
-/// adapters that implement [BatchableKvCapability].
+/// adapters that implement [BatchKvAdapter].
 sealed class KvOperation {
   const KvOperation(this.key);
 
@@ -10,14 +10,14 @@ sealed class KvOperation {
 }
 
 /// A command to write [value] to [key].
-final class KvWriteOperation extends KvOperation {
-  const KvWriteOperation(super.key, this.value);
+final class WriteKvOperation extends KvOperation {
+  const WriteKvOperation(super.key, this.value);
 
   /// Encoded value ready for adapter-level storage handling.
   final Object? value;
 }
 
 /// A command to remove [key].
-final class KvRemoveOperation extends KvOperation {
-  const KvRemoveOperation(super.key);
+final class RemoveKvOperation extends KvOperation {
+  const RemoveKvOperation(super.key);
 }

@@ -54,3 +54,18 @@ final class UnsupportedValueKvException extends KvException {
   @override
   String get name => 'UnsupportedValueKvException';
 }
+
+
+final class UnsafeClearKvException extends KvException {
+  const UnsafeClearKvException(super.message, {super.cause});
+
+  @override
+  String get name => 'UnsafeClearKvException';
+}
+
+final class WriteBehindKvException extends KvException {
+  const WriteBehindKvException(super.message, {super.cause});
+
+  @override
+  String get name => 'WriteBehindKvException';
+}
