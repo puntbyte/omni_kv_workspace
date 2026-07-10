@@ -28,6 +28,6 @@ final class AppKey<T> extends KvKey<T> {
   );
 }
 
-extension AppKvGatewayNamespace<A extends KvCapability> on KvGateway<A> {
-  KvEntry<T, A> app<T>(AppKey<T> key) => entry(key);
+extension AppKvGatewayNamespace<TAdapter extends KvAdapter<dynamic>> on KvGateway<TAdapter> {
+  KvEntry<T, TAdapter> app<T>(AppKey<T> key) => entry(key);
 }

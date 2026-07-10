@@ -3,23 +3,22 @@ import 'package:omni_kv/omni_kv.dart';
 
 import 'secure_storage_kv_codec.dart';
 
+final class SecureStorageKvCapability implements ReadWriteClearBatchKvCapability {
+  const SecureStorageKvCapability();
+}
+
 final class SecureStorageKvAdapter
-    with SequentialKvBatchCapability
-    implements
-        KvAdapter,
-        ReadableKvCapability,
-        WritableKvCapability,
-        RemovableKvCapability,
-        ClearableKvCapability,
-        BatchableKvCapability {
+    with SequentialKvBatchAdapter<SecureStorageKvCapability>
+    implements ReadWriteClearBatchKvAdapter<SecureStorageKvCapability> {
   const SecureStorageKvAdapter(
     this.storage, {
     this.codec = const SecureStorageKvCodec(),
   });
 
   final FlutterSecureStorage storage;
+
   @override
-  final SecureStorageKvCodec codec;
+  final KvCodec codec;
 
   @override
   Future<Object?> read(String key) async {
@@ -40,9 +39,17 @@ final class SecureStorageKvAdapter
       return;
     }
 
+    final encoded = codec.encode(value);
+    if (encoded is! String) {
+      throw UnsupportedValueKvException(
+        'SecureStorageKvAdapter requires codecs to encode values as String. '
+        'Got ${encoded.runtimeType}.',
+      );
+    }
+
     await storage.write(
       key: codec.storageKey(key),
-      value: codec.encode(value),
+      value: encoded,
     );
   }
 
@@ -52,7 +59,13 @@ final class SecureStorageKvAdapter
   }
 
   @override
-  Future<void> clear() async {
+  Future<void> clear({bool allowUnscoped = false}) async {
+    ensureScopedClearAllowed(
+      isScoped: codec.isScoped,
+      allowUnscoped: allowUnscoped,
+      adapterName: 'SecureStorageKvAdapter',
+    );
+
     final values = await storage.readAll();
     final keys = values.keys.where(codec.ownsKey).toList(growable: false);
 
@@ -60,4 +73,7 @@ final class SecureStorageKvAdapter
       await storage.delete(key: key);
     }
   }
+
+  @override
+  Future<void> close() async {}
 }

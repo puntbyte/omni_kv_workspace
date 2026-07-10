@@ -3,23 +3,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'shared_preferences_kv_codec.dart';
 
+final class SharedPreferencesKvCapability implements ReadWriteClearBatchKvCapability {
+  const SharedPreferencesKvCapability();
+}
+
 final class SharedPreferencesKvAdapter
-    with SequentialKvBatchCapability
-    implements
-        KvAdapter,
-        ReadableKvCapability,
-        WritableKvCapability,
-        RemovableKvCapability,
-        ClearableKvCapability,
-        BatchableKvCapability {
+    with SequentialKvBatchAdapter<SharedPreferencesKvCapability>
+    implements ReadWriteClearBatchKvAdapter<SharedPreferencesKvCapability> {
   const SharedPreferencesKvAdapter(
     this.preferences, {
     this.codec = const SharedPreferencesKvCodec(),
   });
 
   final SharedPreferences preferences;
+
   @override
-  final SharedPreferencesKvCodec codec;
+  final KvCodec codec;
 
   @override
   Future<Object?> read(String key) async {
@@ -65,11 +64,19 @@ final class SharedPreferencesKvAdapter
   }
 
   @override
-  Future<void> clear() async {
-    final keys = preferences.getKeys().where(codec.ownsKey).toList(growable: false);
+  Future<void> clear({bool allowUnscoped = false}) async {
+    ensureScopedClearAllowed(
+      isScoped: codec.isScoped,
+      allowUnscoped: allowUnscoped,
+      adapterName: 'SharedPreferencesKvAdapter',
+    );
 
+    final keys = preferences.getKeys().where(codec.ownsKey).toList(growable: false);
     for (final key in keys) {
       await preferences.remove(key);
     }
   }
+
+  @override
+  Future<void> close() async {}
 }

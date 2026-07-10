@@ -25,6 +25,6 @@ final class AuthKey<T> extends KvKey<T> {
   );
 }
 
-extension AuthKvGatewayNamespace<A extends KvCapability> on KvGateway<A> {
-  KvEntry<T, A> auth<T>(AuthKey<T> key) => entry(key);
+extension AuthKvGatewayNamespace<TAdapter extends KvAdapter<dynamic>> on KvGateway<TAdapter> {
+  KvEntry<T, TAdapter> auth<T>(AuthKey<T> key) => entry(key);
 }

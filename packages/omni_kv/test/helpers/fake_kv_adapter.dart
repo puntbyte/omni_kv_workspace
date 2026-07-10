@@ -1,16 +1,17 @@
 import 'dart:async';
+
 import 'package:omni_kv/omni_kv.dart';
 
-class FakeKvAdapter
-    implements
-        ReadableKvCapability,
-        WritableKvCapability,
-        RemovableKvCapability,
-        ClearableKvCapability,
-        WatchableKvCapability,
-        BatchableKvCapability {
+final class FakeKvCapability implements FullKvCapability {
+  const FakeKvCapability();
+}
+
+class FakeKvAdapter implements FullKvAdapter<FakeKvCapability> {
   final Map<String, Object?> store = {};
   final StreamController<KvChange<Object?>> controller = StreamController.broadcast();
+
+  @override
+  final KvCodec codec = const MemoryKvCodec();
 
   @override
   Future<Object?> read(String key) async => store[key];
@@ -20,33 +21,41 @@ class FakeKvAdapter
 
   @override
   Future<void> write(String key, Object? value) async {
-    final prev = store[key];
+    final previous = store[key];
     store[key] = value;
-    controller.add(KvUpdateChange(key: key, value: value, previousValue: prev));
+    controller.add(UpdateKvChange(key: key, value: value, previousValue: previous));
   }
 
   @override
   Future<void> remove(String key) async {
-    final prev = store.remove(key);
-    controller.add(KvRemoveChange(key: key, previousValue: prev));
+    final previous = store.remove(key);
+    controller.add(RemoveKvChange(key: key, previousValue: previous));
   }
 
   @override
-  Future<void> clear() async => store.clear();
+  Future<void> clear({bool allowUnscoped = false}) async => store.clear();
 
   @override
   Future<void> batch(List<KvOperation> operations) async {
     for (final operation in operations) {
       switch (operation) {
-        case KvWriteOperation(:final key, :final value):
+        case WriteKvOperation(:final key, :final value):
           await write(key, value);
-        case KvRemoveOperation(:final key):
+        case RemoveKvOperation(:final key):
           await remove(key);
       }
     }
   }
 
   @override
-  Stream<KvChange<Object?>> watch(String key) =>
-      controller.stream.where((event) => event.key == key);
+  Stream<KvChange<Object?>> watch(String key) => controller.stream.where((event) => event.key == key);
+
+  @override
+  Stream<KvChange<Object?>> watchAll([String? prefix]) {
+    if (prefix == null || prefix.isEmpty) return controller.stream;
+    return controller.stream.where((event) => event.key.startsWith(prefix));
+  }
+
+  @override
+  Future<void> close() => controller.close();
 }

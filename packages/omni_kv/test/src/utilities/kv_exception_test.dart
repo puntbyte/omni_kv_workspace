@@ -3,11 +3,11 @@ import 'package:test/test.dart';
 
 void main() {
   group('KvException', () {
-    test('KvMissingValueException formats correctly', () {
+    test('MissingValueKvException formats correctly', () {
       const ex = MissingValueKvException('auth_token');
       expect(
         ex.toString(),
-        'KvMissingValueException: No value found for key "auth_token".',
+        'MissingValueKvException: No value found for key "auth_token".',
       );
     });
 

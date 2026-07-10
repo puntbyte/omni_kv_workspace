@@ -6,6 +6,8 @@ final class SharedPreferencesKvCodec implements KvCodec {
 
   final String? prefix;
 
+  bool get isScoped => prefix != null && prefix!.isNotEmpty;
+
   @override
   String storageKey(String logicalKey) {
     final prefix = this.prefix;
@@ -16,11 +18,7 @@ final class SharedPreferencesKvCodec implements KvCodec {
   @override
   String logicalKey(Object? storageKey) {
     if (storageKey is! String) {
-      throw ArgumentError.value(
-        storageKey,
-        'storageKey',
-        'SharedPreferences keys must be strings.',
-      );
+      throw ArgumentError.value(storageKey, 'storageKey', 'SharedPreferences keys must be strings.');
     }
 
     final prefix = this.prefix;
@@ -35,7 +33,6 @@ final class SharedPreferencesKvCodec implements KvCodec {
   bool ownsKey(Object? storageKey) {
     final prefix = this.prefix;
     if (prefix == null || prefix.isEmpty) return true;
-
     return storageKey is String && storageKey.startsWith(prefix);
   }
 

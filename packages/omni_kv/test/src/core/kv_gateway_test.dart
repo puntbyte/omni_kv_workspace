@@ -31,7 +31,7 @@ void main() {
       expect(await gateway.contains(AppKey.theme), isFalse);
 
       await gateway.write(AppKey.theme, 'light');
-      await gateway.clear();
+      await gateway.clear(allowUnscoped: true);
       expect(adapter.store, isEmpty);
     });
 

@@ -35,7 +35,7 @@ void main() {
       expect(await gateway.test(.token).exists(), isFalse);
 
       await gateway.test(.pinCode).write(1111);
-      await gateway.clear();
+      await gateway.clear(allowUnscoped: true);
       expect(await gateway.test(.pinCode).exists(), isFalse);
     });
 

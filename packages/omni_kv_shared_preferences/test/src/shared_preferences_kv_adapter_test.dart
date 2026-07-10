@@ -52,7 +52,7 @@ void main() {
 
     test('clear removes all entries', () async {
       await gateway.test(.intVal).write(1);
-      await gateway.clear();
+      await gateway.clear(allowUnscoped: true);
       expect(prefs.getKeys(), isEmpty);
     });
   });
