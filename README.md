@@ -1,114 +1,68 @@
-<p align="center">
-  <img src="logo.svg" alt="OmniKV Logo" height="400">
-</p>
-
 # OmniKV Workspace
 
-[![Dart Platform](https://img.shields.io/badge/Platform-Dart%20%7C%20Flutter-02569B?logo=dart)](https://dart.dev)
-[![Melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos)
+OmniKV is a strongly typed, storage-agnostic key-value framework for Dart and Flutter.
 
-Welcome to the **OmniKV** monorepo!
+The workspace contains:
 
-**OmniKV** is a strongly-typed, storage-agnostic key-value framework for Dart and Flutter. It
-completely eliminates magic strings, implicit type casting, and runtime parsing errors when dealing
-with app settings, feature flags, auth tokens, and local caches.
+- `omni_kv` — core typed keys, converters, capability-gated gateway API, memory adapter, decorators.
+- `omni_kv_hive_ce` — Hive CE adapter.
+- `omni_kv_shared_preferences` — SharedPreferences adapter.
+- `omni_kv_secure_storage` — Flutter Secure Storage adapter.
+- `omni_kv_testing` — reusable adapter conformance tests and fixtures.
+- `example` — console and Flutter examples.
 
-> **Note:** If you are looking for documentation on how to use OmniKV in your app, please see
-> the [core package documentation](packages/omni_kv/README.md).
+## Version
 
----
+All publishable packages are aligned at `0.2.0`.
 
-## 📦 Packages
+## Key ideas
 
-This repository is managed as a workspace using [Melos](https://melos.invertase.dev/). It contains
-the pure-Dart core package alongside several officially supported storage adapters.
+OmniKV separates capability markers from adapter behavior:
 
-| Package                                                             | Version                                                                                                                    | Description                                                                           |
-|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| [`omni_kv`](packages/omni_kv)                                       | [![pub](https://img.shields.io/pub/v/omni_kv.svg)](https://pub.dev/packages/omni_kv)                                       | Pure Dart core APIs, typed keys, converters, capabilities, and the `MemoryKvAdapter`. |
-| [`omni_kv_shared_preferences`](packages/omni_kv_shared_preferences) | [![pub](https://img.shields.io/pub/v/omni_kv_shared_preferences.svg)](https://pub.dev/packages/omni_kv_shared_preferences) | Flutter adapter backed by `shared_preferences`.                                       |
-| [`omni_kv_secure_storage`](packages/omni_kv_secure_storage)         | [![pub](https://img.shields.io/pub/v/omni_kv_secure_storage.svg)](https://pub.dev/packages/omni_kv_secure_storage)         | Flutter adapter backed by `flutter_secure_storage`.                                   |
-| [`omni_kv_hive_ce`](packages/omni_kv_hive_ce)                       | [![pub](https://img.shields.io/pub/v/omni_kv_hive_ce.svg)](https://pub.dev/packages/omni_kv_hive_ce)                       | Dart/Flutter adapter backed by `hive_ce`.                                             |
+```dart
+abstract interface class ReadKvCapability implements KvCapability {}
 
----
-
-## 🏗️ Workspace Structure
-
-```text
-omni_kv_workspace/
-├── pubspec.yaml              # Workspace root configuration
-├── melos.yaml                # Melos configuration and scripts
-├── analysis_options.yaml     # Shared strict linting rules
-│
-├── packages/                 # Core framework and adapters
-│   ├── omni_kv/
-│   ├── omni_kv_hive_ce/
-│   ├── omni_kv_secure_storage/
-│   └── omni_kv_shared_preferences/
-│
-└── example/                  # Comprehensive example app
-    ├── bin/                  # Pure Dart CLI demos
-    └── lib/                  # Flutter visual demo
+abstract interface class ReadKvAdapter<TCapability extends ReadKvCapability>
+    implements KvAdapter<TCapability> {
+  Future<Object?> read(String key);
+  Future<bool> contains(String key);
+}
 ```
 
----
+The public gateway remains ergonomic:
 
-## 🚀 Running the Examples
-
-The `example` directory contains both pure Dart CLI applications and a fully functional Flutter
-application demonstrating all the adapters.
-
-**Run the pure Dart Memory & Hive examples:**
-```bash
-cd example
-dart run bin/main.memory.dart
-dart run bin/main.hive_ce.dart
+```dart
+final kv = KvGateway(MemoryKvAdapter());
 ```
 
-**Run the Flutter example (SharedPreferences & Secure Storage):**
+Operations are available only when the adapter supports the required contract. For example, `.watch()` only exists for `WatchKvAdapter` implementations.
+
+## Run examples
+
 ```bash
-cd example
-flutter run -t lib/main.dart
+dart --directory example run bin/main.memory.dart
+dart --directory example run bin/main.hive_ce.dart
+flutter --directory example run -d windows lib/main.dart
 ```
 
----
+Flutter-backed console examples:
 
-## 🛠️ Contributing & Development
-
-This repository relies on [Melos](https://melos.invertase.dev/) to manage the multi-package setup.
-
-### 1. Initial Setup
-
-First, activate Melos globally and bootstrap the workspace to link all local dependencies together.
 ```bash
-dart pub global activate melos
-melos bootstrap
+flutter --directory example pub get
+flutter --directory example run -d windows bin/main.shared.dart
+flutter --directory example run -d windows bin/main.secured.dart
 ```
 
-### 2. Useful Commands
+## Workspace commands
 
-We have configured several Melos scripts to ensure code quality across the entire workspace.
-
-**Format all code:**
 ```bash
+dart pub get
 melos run format:apply
-```
-
-**Run static analysis (linting):**
-```bash
 melos run analyze
-```
-
-**Run all tests (Dart & Flutter):**
-```bash
 melos run test
+melos run publish:dry-run
 ```
 
-*(This automatically runs `dart test` for pure Dart packages and `flutter test` for
-Flutter-dependent packages).*
+## Documentation
 
----
-
-## 📜 License
-
-This workspace is licensed under the MIT License.
+See `docs/` for the release checklist, capability guide, adapter guide, examples, and troubleshooting notes.
