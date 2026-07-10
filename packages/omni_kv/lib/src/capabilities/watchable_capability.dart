@@ -1,20 +1,26 @@
+import '../core/kv_adapter.dart';
 import '../core/kv_capability.dart';
 import '../core/kv_entry.dart';
 import '../core/kv_gateway.dart';
 import '../core/kv_key.dart';
 import '../models/kv_change.dart';
 
-/// Capability for watching specific value changes.
-abstract mixin class WatchableKvCapability implements KvCapability {
+/// Adapter contract for watching specific value changes.
+abstract interface class WatchKvAdapter<TCapability extends WatchKvCapability>
+    implements KvAdapter<TCapability> {
   Stream<KvChange<Object?>> watch(String key);
 }
 
-/// Capability for watching all changes within a namespace prefix.
-abstract mixin class NamespaceWatchableKvCapability implements WatchableKvCapability {
+/// Adapter contract for watching all changes within a namespace prefix.
+abstract interface class NamespaceWatchKvAdapter<
+  TCapability extends NamespaceWatchKvCapability
+>
+    implements WatchKvAdapter<TCapability> {
   Stream<KvChange<Object?>> watchAll([String? prefix]);
 }
 
-extension WatchableKvGatewayExtension<A extends WatchableKvCapability> on KvGateway<A> {
+extension WatchKvGatewayExtension<TAdapter extends WatchKvAdapter<dynamic>>
+    on KvGateway<TAdapter> {
   Stream<KvChange<T>> watch<T>(KvKey<T> key) {
     return adapter.watch(key.name).map((change) {
       final value = change.value == null ? null : key.decode(change.value, isPresent: true);
@@ -23,11 +29,11 @@ extension WatchableKvGatewayExtension<A extends WatchableKvCapability> on KvGate
           : key.decode(change.previousValue, isPresent: true);
 
       return switch (change) {
-        KvRemoveChange<Object?>() => KvRemoveChange<T>(
+        RemoveKvChange<Object?>() => RemoveKvChange<T>(
           key: change.key,
           previousValue: previousValue,
         ),
-        _ => KvUpdateChange<T>(
+        _ => UpdateKvChange<T>(
           key: change.key,
           value: value,
           previousValue: previousValue,
@@ -37,13 +43,16 @@ extension WatchableKvGatewayExtension<A extends WatchableKvCapability> on KvGate
   }
 }
 
-extension NamespaceWatchableKvGatewayExtension<A extends NamespaceWatchableKvCapability>
-    on KvGateway<A> {
+extension NamespaceWatchKvGatewayExtension<
+  TAdapter extends NamespaceWatchKvAdapter<dynamic>
+>
+    on KvGateway<TAdapter> {
   Stream<KvChange<Object?>> watchNamespace(String namespace) {
     return adapter.watchAll('$namespace.');
   }
 }
 
-extension WatchableKvEntryExtension<T, A extends WatchableKvCapability> on KvEntry<T, A> {
+extension WatchKvEntryExtension<T, TAdapter extends WatchKvAdapter<dynamic>>
+    on KvEntry<T, TAdapter> {
   Stream<KvChange<T>> watch() => gateway.watch(key);
 }

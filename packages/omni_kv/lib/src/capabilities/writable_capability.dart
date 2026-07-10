@@ -4,19 +4,22 @@ import '../core/kv_entry.dart';
 import '../core/kv_gateway.dart';
 import '../core/kv_key.dart';
 
-/// Capability for writing values.
-abstract mixin class WritableKvCapability implements KvCapability {
+/// Adapter contract for writing values.
+abstract interface class WriteKvAdapter<TCapability extends WriteKvCapability>
+    implements KvAdapter<TCapability> {
   Future<void> write(String key, Object? value);
 }
 
-extension WritableKvGatewayExtension<A extends WritableKvCapability> on KvGateway<A> {
+extension WriteKvGatewayExtension<TAdapter extends WriteKvAdapter<dynamic>>
+    on KvGateway<TAdapter> {
   Future<void> write<T>(KvKey<T> key, T value) {
-    return adapter.write(key.id, key.encode(value));
+    return adapter.write(key.name, key.encode(value));
   }
 
   Future<void> set<T>(KvKey<T> key, T value) => write(key, value);
 }
 
-extension WritableKvEntryExtension<T, A extends WritableKvCapability> on KvEntry<T, A> {
+extension WriteKvEntryExtension<T, TAdapter extends WriteKvAdapter<dynamic>>
+    on KvEntry<T, TAdapter> {
   Future<void> write(T value) => gateway.write(key, value);
 }
