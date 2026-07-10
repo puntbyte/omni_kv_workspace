@@ -1,9 +1,10 @@
-## [0.1.0]
+## 0.2.0
 
-### Added
+- Updated to the new capability/adapter boundary.
+- Added `SharedPreferencesKvCapability`.
+- Added close lifecycle no-op.
+- Added safe scoped clear support.
 
-- **`SharedPreferencesKvAdapter`**: A fully featured OmniKV adapter backed by the official
-  `shared_preferences` package.
-- **`SharedPreferencesKvCodec`**: Handles logical-to-storage key translation and prefixing.
-- Natively supports `String`, `int`, `double`, `bool`, and `List<String>`.
-- Supports capabilities: `Readable`, `Writable`, `Removable`, `Clearable`, and `Batchable`.
+## 0.1.0
+
+- Initial SharedPreferences adapter preview.

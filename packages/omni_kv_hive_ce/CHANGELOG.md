@@ -1,9 +1,11 @@
-## [0.1.0]
+## 0.2.0
 
-### Added
+- Updated to the new capability/adapter boundary.
+- Added `HiveCeKvCapability`.
+- Added namespace watch support.
+- Added close lifecycle support.
+- Added safe scoped clear support.
 
-- **`HiveCeKvAdapter`**: A high-performance OmniKV adapter backed by the `hive_ce` package.
-- **`HiveCeKvCodec`**: Handles logical-to-storage key translation and prefixing.
-- Supports reactive streaming via the `WatchableKvCapability`.
-- Supports capabilities: `Readable`, `Writable`, `Removable`, `Clearable`, `Batchable`, and
-  `Watchable`.
+## 0.1.0
+
+- Initial Hive CE adapter preview.
