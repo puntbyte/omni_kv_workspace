@@ -3,20 +3,16 @@ description: The monorepo for OmniKV and its adapter packages.
 publish_to: none
 
 environment:
-  sdk: ^3.10.0
+  sdk: ^3.11.0
 
 workspace:
-  - packages/omni_kv
-  - packages/omni_kv_shared_preferences
-  - packages/omni_kv_hive_ce
-  - packages/omni_kv_secure_storage
-  - packages/omni_kv_testing
   - example
+  - packages/*
 
 dev_dependencies:
-  melos: ^7.8.1
-  test: ^1.26.0
-  very_good_analysis: ^10.2.0
+  melos: ^8.2.0
+  test: ^1.30.0
+  very_good_analysis: ^10.3.0
 
 melos:
   categories:
@@ -49,3 +45,11 @@ melos:
     test:flutter:
       run: melos exec --dir-exists=test --flutter -- flutter test
       description: Run tests for Flutter packages.
+
+    publish:dry-run:
+      run: melos exec --no-private -- dart pub publish --dry-run
+      description: Run pub publish dry-run for publishable packages.
+
+    doctor:
+      run: melos exec -- dart pub deps
+      description: Print dependency resolution for every workspace package.
