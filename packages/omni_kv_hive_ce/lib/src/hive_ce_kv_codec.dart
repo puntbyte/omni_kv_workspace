@@ -1,13 +1,12 @@
 import 'package:omni_kv/omni_kv.dart';
 
 /// Key/value codec used by `HiveCeKvAdapter`.
-///
-/// Hive CE can store primitive values directly. This codec mainly owns
-/// prefixing and logical/storage key translation so adapter logic stays small.
 final class HiveCeKvCodec implements KvCodec {
   const HiveCeKvCodec({this.prefix});
 
   final String? prefix;
+
+  bool get isScoped => prefix != null && prefix!.isNotEmpty;
 
   @override
   String storageKey(String logicalKey) {
@@ -22,7 +21,7 @@ final class HiveCeKvCodec implements KvCodec {
       throw ArgumentError.value(
         storageKey,
         'storageKey',
-        'Hive CE keys managed by PolyKV must be strings.',
+        'Hive CE keys managed by OmniKV must be strings.',
       );
     }
 
@@ -38,7 +37,6 @@ final class HiveCeKvCodec implements KvCodec {
   bool ownsKey(Object? storageKey) {
     final prefix = this.prefix;
     if (prefix == null || prefix.isEmpty) return true;
-
     return storageKey is String && storageKey.startsWith(prefix);
   }
 

@@ -1,51 +1,45 @@
 import 'dart:async';
 
 import '../capabilities/batchable_capability.dart';
-import '../capabilities/clearable_capability.dart';
-import '../capabilities/readable_capability.dart';
-import '../capabilities/removable_capability.dart';
-import '../capabilities/watchable_capability.dart';
-import '../capabilities/writable_capability.dart';
-import '../core/kv_adapter.dart';
+import 'composite_kv_adapters.dart';
+import '../codecs/memory_kv_codec.dart';
+import '../core/kv_capability.dart';
+import '../core/kv_codec.dart';
 import '../models/kv_change.dart';
-import 'memory_kv_codec.dart';
 
 final class MemoryKvAdapter
-    with SequentialKvBatchCapability
-    implements
-        KvAdapter,
-        ReadableKvCapability,
-        WritableKvCapability,
-        RemovableKvCapability,
-        ClearableKvCapability,
-        NamespaceWatchableKvCapability,
-        BatchableKvCapability {
+    with SequentialKvBatchAdapter<MemoryKvCapability>
+    implements FullKvAdapter<MemoryKvCapability> {
   MemoryKvAdapter({
     Map<String, Object?>? initialValues,
     this.codec = const MemoryKvCodec(),
   }) : _values = Map<String, Object?>.of(initialValues ?? const {});
 
   @override
-  final MemoryKvCodec codec;
+  final KvCodec codec;
   final Map<String, Object?> _values;
 
   final Map<String, StreamController<KvChange<Object?>>> _controllers = {};
   final StreamController<KvChange<Object?>> _globalController = StreamController.broadcast();
+  var _closed = false;
 
   Map<String, Object?> get values => Map.unmodifiable(_values);
 
   @override
   Future<Object?> read(String key) async {
+    _ensureOpen();
     return codec.decode(_values[codec.storageKey(key)]);
   }
 
   @override
   Future<bool> contains(String key) async {
+    _ensureOpen();
     return _values.containsKey(codec.storageKey(key));
   }
 
   @override
   Future<void> write(String key, Object? value) async {
+    _ensureOpen();
     if (value == null) {
       await remove(key);
       return;
@@ -57,7 +51,7 @@ final class MemoryKvAdapter
     _values[storageKey] = encoded;
     _emit(
       storageKey,
-      KvUpdateChange<Object?>(
+      UpdateKvChange<Object?>(
         key: key,
         value: encoded,
         previousValue: previous,
@@ -67,13 +61,14 @@ final class MemoryKvAdapter
 
   @override
   Future<void> remove(String key) async {
+    _ensureOpen();
     final storageKey = codec.storageKey(key);
     if (!_values.containsKey(storageKey)) return;
 
     final previous = _values.remove(storageKey);
     _emit(
       storageKey,
-      KvRemoveChange<Object?>(
+      RemoveKvChange<Object?>(
         key: key,
         previousValue: previous,
       ),
@@ -81,7 +76,8 @@ final class MemoryKvAdapter
   }
 
   @override
-  Future<void> clear() async {
+  Future<void> clear({bool allowUnscoped = false}) async {
+    _ensureOpen();
     final keys = _values.keys.where(codec.ownsKey).toList(growable: false);
 
     for (final key in keys) {
@@ -91,13 +87,26 @@ final class MemoryKvAdapter
 
   @override
   Stream<KvChange<Object?>> watch(String key) {
+    _ensureOpen();
     return _controllerFor(codec.storageKey(key)).stream;
   }
 
   @override
   Stream<KvChange<Object?>> watchAll([String? prefix]) {
+    _ensureOpen();
     if (prefix == null || prefix.isEmpty) return _globalController.stream;
     return _globalController.stream.where((change) => change.key.startsWith(prefix));
+  }
+
+  @override
+  Future<void> close() async {
+    if (_closed) return;
+    _closed = true;
+    for (final controller in _controllers.values.toList(growable: false)) {
+      await controller.close();
+    }
+    _controllers.clear();
+    await _globalController.close();
   }
 
   StreamController<KvChange<Object?>> _controllerFor(String storageKey) {
@@ -120,14 +129,18 @@ final class MemoryKvAdapter
   }
 
   void _emit(String storageKey, KvChange<Object?> change) {
-    // Emit to specific key listeners
     final controller = _controllers[storageKey];
     if (controller != null && !controller.isClosed) {
       controller.add(change);
     }
-    // Emit to namespace listeners
     if (!_globalController.isClosed) {
       _globalController.add(change);
+    }
+  }
+
+  void _ensureOpen() {
+    if (_closed) {
+      throw StateError('MemoryKvAdapter is closed.');
     }
   }
 }

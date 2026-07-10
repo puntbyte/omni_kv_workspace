@@ -44,7 +44,7 @@ void main() {
       await gateway.test(.userName).write('Charlie');
       await gateway.test(.score).write(50);
 
-      await gateway.clear();
+      await gateway.clear(allowUnscoped: true);
 
       expect(adapter.values, isEmpty);
       expect(await gateway.test(.userName).exists(), isFalse);

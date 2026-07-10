@@ -3,16 +3,13 @@ import 'package:omni_kv/omni_kv.dart';
 
 import 'hive_ce_kv_codec.dart';
 
+final class HiveCeKvCapability implements FullKvCapability {
+  const HiveCeKvCapability();
+}
+
 final class HiveCeKvAdapter
-    with SequentialKvBatchCapability
-    implements
-        KvAdapter,
-        ReadableKvCapability,
-        WritableKvCapability,
-        RemovableKvCapability,
-        ClearableKvCapability,
-        WatchableKvCapability,
-        BatchableKvCapability {
+    with SequentialKvBatchAdapter<HiveCeKvCapability>
+    implements FullKvAdapter<HiveCeKvCapability> {
   const HiveCeKvAdapter(
     this.box, {
     this.codec = const HiveCeKvCodec(),
@@ -48,7 +45,13 @@ final class HiveCeKvAdapter
   }
 
   @override
-  Future<void> clear() async {
+  Future<void> clear({bool allowUnscoped = false}) async {
+    ensureScopedClearAllowed(
+      isScoped: codec.isScoped,
+      allowUnscoped: allowUnscoped,
+      adapterName: 'HiveCeKvAdapter',
+    );
+
     final keys = box.keys.where(codec.ownsKey).toList(growable: false);
     await box.deleteAll(keys);
   }
@@ -59,17 +62,38 @@ final class HiveCeKvAdapter
 
     return box.watch(key: storageKey).map((event) {
       if (event.deleted) {
-        return KvRemoveChange<Object?>(
+        return RemoveKvChange<Object?>(
           key: key,
           previousValue: null,
         );
       }
 
-      return KvUpdateChange<Object?>(
+      return UpdateKvChange<Object?>(
         key: key,
         value: codec.decode(event.value),
         previousValue: null,
       );
     });
   }
+
+  @override
+  Stream<KvChange<Object?>> watchAll([String? prefix]) {
+    return box.watch().where((event) {
+      final logicalKey = codec.logicalKey(event.key);
+      return prefix == null || prefix.isEmpty || logicalKey.startsWith(prefix);
+    }).map((event) {
+      final logicalKey = codec.logicalKey(event.key);
+      if (event.deleted) {
+        return RemoveKvChange<Object?>(key: logicalKey, previousValue: null);
+      }
+      return UpdateKvChange<Object?>(
+        key: logicalKey,
+        value: codec.decode(event.value),
+        previousValue: null,
+      );
+    });
+  }
+
+  @override
+  Future<void> close() => box.close();
 }

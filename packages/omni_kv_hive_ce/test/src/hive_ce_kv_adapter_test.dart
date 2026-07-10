@@ -13,7 +13,7 @@ void main() {
     late KvGateway<HiveCeKvAdapter> gateway;
 
     setUp(() async {
-      tempDir = Directory.systemTemp.createTempSync('poly_kv_hive_test_');
+      tempDir = Directory.systemTemp.createTempSync('omni_kv_hive_test_');
       Hive.init(tempDir.path);
       box = await Hive.openBox<Object?>('test_box');
       gateway = KvGateway(HiveCeKvAdapter(box));
@@ -27,7 +27,7 @@ void main() {
     test('persists read and write operations', () async {
       await gateway.test(.theme).write('dark');
       expect(await gateway.test(.theme).read(), 'dark');
-      expect(box.get('theme'), 'dark');
+      expect(box.get('test.theme'), 'dark');
     });
 
     test('batch correctly updates and deletes', () async {
@@ -44,7 +44,7 @@ void main() {
 
     test('clear empties the box', () async {
       await gateway.test(.theme).write('dark');
-      await gateway.clear();
+      await gateway.clear(allowUnscoped: true);
       expect(box.isEmpty, isTrue);
     });
 

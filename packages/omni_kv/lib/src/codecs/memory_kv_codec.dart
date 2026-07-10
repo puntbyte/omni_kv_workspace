@@ -6,6 +6,8 @@ final class MemoryKvCodec implements KvCodec {
 
   final String? prefix;
 
+  bool get isScoped => prefix != null && prefix!.isNotEmpty;
+
   @override
   String storageKey(String logicalKey) {
     final prefix = this.prefix;
@@ -19,7 +21,7 @@ final class MemoryKvCodec implements KvCodec {
       throw ArgumentError.value(
         storageKey,
         'storageKey',
-        'Memory keys managed by PolyKV must be strings.',
+        'Memory keys managed by OmniKV must be strings.',
       );
     }
 
